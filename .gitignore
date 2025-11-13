@@ -43,3 +43,4 @@ application-local.properties
 *.db
 pipes/
 *.log
+/.idea/
