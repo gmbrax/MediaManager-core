@@ -23,7 +23,7 @@ public class MediaManagerApplication {
             databaseManager = new DatabaseManager(config);
             databaseManager.init();
 
-            // TODO: Initialize database connection
+            
             // TODO: Initialize IPC server with named pipes
             // TODO: Start application services
 
@@ -35,8 +35,26 @@ public class MediaManagerApplication {
                 logger.info("Shutting down MediaManager Core...");
                 if (databaseManager != null) {
                     databaseManager.close();
+
+                // TODO: Cleanup resources
+
+                logger.info("MediaManager Core shutdown successfully");
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+
                 }
             }));
+            logger.info("Application is running");
+            logger.info("Press Ctrl+C to exit");
+            Thread.currentThread().join();
+
+        } catch (InterruptedException e) {
+
+            logger.info("Application interrupted, initiating shutdown...");
+
+            Thread.currentThread().interrupt();
 
         } catch (Exception e) {
             logger.error("Failed to start MediaManager Core", e);
