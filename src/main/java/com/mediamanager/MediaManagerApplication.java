@@ -32,19 +32,28 @@ public class MediaManagerApplication {
 
             // Keep application running
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+
                 logger.info("Shutting down MediaManager Core...");
+
+
                 if (databaseManager != null) {
                     databaseManager.close();
                 }
 
-                // TODO: Cleanup resources
 
                 logger.info("MediaManager Core shutdown successfully");
+                logger.info("Goodbye!");
+
+
+                // Give Log4j2 time to write all pending messages before shutting down
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
+
+                // Now shutdown Log4j2
+                org.apache.logging.log4j.LogManager.shutdown();
             }));
             logger.info("Application is running");
             logger.info("Press Ctrl+C to exit");

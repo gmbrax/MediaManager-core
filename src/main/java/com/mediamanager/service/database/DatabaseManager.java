@@ -88,11 +88,14 @@ public class DatabaseManager {
     public void close() {
         if (connection != null) {
             try {
+                logger.info("Closing database connection...");
                 connection.close();
                 logger.info("Database connection closed successfully");
             } catch (SQLException e) {
-                logger.error("Failed to close database connection", e);
+                logger.error("Error closing database connection: {}", e.getMessage());
             }
+        } else {
+            logger.debug("No database connection to close");
         }
     }
 }
