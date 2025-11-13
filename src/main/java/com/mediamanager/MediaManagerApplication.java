@@ -35,6 +35,7 @@ public class MediaManagerApplication {
                 logger.info("Shutting down MediaManager Core...");
                 if (databaseManager != null) {
                     databaseManager.close();
+                }
 
                 // TODO: Cleanup resources
 
@@ -43,7 +44,6 @@ public class MediaManagerApplication {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-
                 }
             }));
             logger.info("Application is running");
@@ -64,8 +64,7 @@ public class MediaManagerApplication {
 
     private static void loadConfiguration() throws IOException {
         config = new Properties();
-        try (InputStream input = MediaManagerApplication.class.getClassLoader()
-                .getResourceAsStream("config.properties")) {
+        try (InputStream input = MediaManagerApplication.class.getClassLoader().getResourceAsStream("config.properties")) {
             if (input == null) {
                 throw new IOException("Unable to find config.properties");
             }
