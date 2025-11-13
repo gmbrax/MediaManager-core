@@ -1,5 +1,6 @@
 package com.mediamanager;
 
+import com.mediamanager.service.ipc.IPCManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,6 +14,7 @@ public class MediaManagerApplication {
     private static final Logger logger = LogManager.getLogger(MediaManagerApplication.class);
     private static Properties config;
     private static DatabaseManager databaseManager;
+    private static IPCManager ipcManager;
 
     public static void main(String[] args) {
         logger.info("Starting MediaManager Core Application...");
@@ -23,12 +25,13 @@ public class MediaManagerApplication {
             databaseManager = new DatabaseManager(config);
             databaseManager.init();
 
-            
-            // TODO: Initialize IPC server with named pipes
+            ipcManager = new IPCManager(config);
+            ipcManager.init();
+
             // TODO: Start application services
 
             logger.info("MediaManager Core started successfully");
-            logger.info("IPC Pipe: {}", config.getProperty("ipc.pipe.path") + "/" + config.getProperty("ipc.pipe.name"));
+            logger.info("IPC Socket: {}", ipcManager.getSocketPath().toAbsolutePath().toString());
 
             // Keep application running
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -38,6 +41,14 @@ public class MediaManagerApplication {
 
                 if (databaseManager != null) {
                     databaseManager.close();
+                }
+
+                if (ipcManager != null) {
+                    try {
+                        ipcManager.close();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
 
 
