@@ -7,9 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import com.mediamanager.service.database.DatabaseManager;
+
 public class MediaManagerApplication {
     private static final Logger logger = LogManager.getLogger(MediaManagerApplication.class);
     private static Properties config;
+    private static DatabaseManager databaseManager;
 
     public static void main(String[] args) {
         logger.info("Starting MediaManager Core Application...");
@@ -17,6 +20,8 @@ public class MediaManagerApplication {
         try {
             // Load configuration
             loadConfiguration();
+            databaseManager = new DatabaseManager(config);
+            databaseManager.init();
 
             // TODO: Initialize database connection
             // TODO: Initialize IPC server with named pipes
