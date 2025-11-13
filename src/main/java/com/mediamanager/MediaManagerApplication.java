@@ -33,7 +33,9 @@ public class MediaManagerApplication {
             // Keep application running
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 logger.info("Shutting down MediaManager Core...");
-                // TODO: Cleanup resources
+                if (databaseManager != null) {
+                    databaseManager.close();
+                }
             }));
 
         } catch (Exception e) {
