@@ -29,7 +29,23 @@ public class MediaManagerApplication {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 logger.info("Shutting down MediaManager Core...");
                 // TODO: Cleanup resources
+
+                logger.info("MediaManager Core shutdown successfully");
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }));
+            logger.info("Application is running");
+            logger.info("Press Ctrl+C to exit");
+            Thread.currentThread().join();
+
+        } catch (InterruptedException e) {
+
+            logger.info("Application interrupted, initiating shutdown...");
+
+            Thread.currentThread().interrupt();
 
         } catch (Exception e) {
             logger.error("Failed to start MediaManager Core", e);
