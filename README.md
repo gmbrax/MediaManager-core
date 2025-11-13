@@ -34,7 +34,7 @@ MediaManager-Core/
 │       │           ├── util/           # Utility classes
 │       │           └── MediaManagerApplication.java
 │       └── resources/
-│           ├── application.properties   # App configuration
+│           ├── config.properties       # App configuration
 │           ├── log4j2.xml              # Logging configuration
 │           └── META-INF/
 │               └── persistence.xml     # JPA configuration
@@ -55,7 +55,7 @@ GRANT ALL PRIVILEGES ON DATABASE mediamanager TO mediamanager;
 
 ### 2. Configuration
 
-Edit `src/main/resources/application.properties` and update the database credentials:
+Edit `src/main/resources/config.properties` and update the database credentials:
 
 ```properties
 db.url=jdbc:postgresql://localhost:5432/mediamanager
@@ -90,7 +90,7 @@ The application creates named pipes for inter-process communication. Default con
 - Pipe name: `mediamanager-pipe`
 - Buffer size: 8192 bytes
 
-You can modify these settings in `application.properties`.
+You can modify these settings in `config.properties`.
 
 ## Logging
 
@@ -116,8 +116,8 @@ mvn test
 
 ## Dependencies
 
-- PostgreSQL Driver: 42.7.3
-- Hibernate ORM: 6.4.4.Final
+- PostgreSQL Driver: 42.7.5
+- Hibernate ORM: 7.1.7.Final
 - HikariCP: 5.1.0
 - Log4j 2: 2.23.1
 - Jackson: 2.16.1

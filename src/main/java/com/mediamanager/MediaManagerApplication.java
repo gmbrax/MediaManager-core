@@ -40,9 +40,9 @@ public class MediaManagerApplication {
     private static void loadConfiguration() throws IOException {
         config = new Properties();
         try (InputStream input = MediaManagerApplication.class.getClassLoader()
-                .getResourceAsStream("application.properties")) {
+                .getResourceAsStream("config.properties")) {
             if (input == null) {
-                throw new IOException("Unable to find application.properties");
+                throw new IOException("Unable to find config.properties");
             }
             config.load(input);
             logger.info("Configuration loaded successfully");
