@@ -110,10 +110,6 @@ public class IPCManager {
         }
         logger.debug("IPC configuration validated successfully");
     }
-    private boolean checkUnixSocketExists() {
-        File socketFile = new File(String.valueOf(socketPath));
-        return socketFile.exists();
-    }
 
     public Path getSocketPath(){
         return socketPath;
