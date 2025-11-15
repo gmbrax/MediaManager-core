@@ -1,9 +1,11 @@
 package com.mediamanager.service.ipc;
 
 
+import com.mediamanager.protocol.SimpleProtocol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.ByteBuffer;
 import java.io.File;
 import java.io.IOException;
 import java.net.StandardProtocolFamily;
@@ -219,15 +221,20 @@ public class IPCManager {
             logger.debug("Client {} handler thread started", clientId);
 
             try {
-                // TODO: No próximo passo, vamos implementar:
-                // 1. Ler mensagens JSON do SocketChannel
-                // 2. Parsear o JSON para objetos Java
-                // 3. Processar a requisição
-                // 4. Criar uma resposta JSON
-                // 5. Escrever a resposta de volta no SocketChannel
+                SimpleProtocol.TextMessage request = readMessage(channel);
+                if (request != null) {
+                    logger.info("Client {} sent: '{}'", clientId, request.getContent());
+                    String response = "Server Received: " + request.getContent();
 
-                // Por enquanto, apenas mantém a conexão aberta brevemente
-                // para testar que o sistema de aceitação e threads está funcionando
+                    SimpleProtocol.TextMessage responseMsg = SimpleProtocol.TextMessage.newBuilder()
+                            .setContent(response).build();
+
+                    writeMessage(channel,responseMsg);
+                    logger.info("Client {} response sent: '{}'", clientId, response);
+
+                }else {
+                    logger.warn("Client {} sent null message", clientId);
+                }
                 Thread.sleep(100);
 
                 logger.debug("Client {} processing complete", clientId);
@@ -244,6 +251,71 @@ public class IPCManager {
                     logger.error("Error closing client {} channel", clientId, e);
                 }
             }
+        }
+
+        private SimpleProtocol.TextMessage readMessage(SocketChannel channel) throws IOException {
+            // Primeiro, lê o tamanho da mensagem (4 bytes = int32)
+            java.nio.ByteBuffer sizeBuffer = java.nio.ByteBuffer.allocate(4);
+            int bytesRead = 0;
+
+            while (bytesRead < 4) {
+                int read = channel.read(sizeBuffer);
+                if (read == -1) {
+                    logger.debug("Client disconnected before sending size");
+                    return null;
+                }
+                bytesRead += read;
+            }
+
+            sizeBuffer.flip();
+            int messageSize = sizeBuffer.getInt();
+            logger.debug("Expecting message of {} bytes", messageSize);
+
+            // Validação básica de segurança
+            if (messageSize <= 0 || messageSize > 1024 * 1024) { // Max 1MB
+                throw new IOException("Invalid message size: " + messageSize);
+            }
+
+            // Agora lê a mensagem completa
+            java.nio.ByteBuffer messageBuffer = java.nio.ByteBuffer.allocate(messageSize);
+            bytesRead = 0;
+
+            while (bytesRead < messageSize) {
+                int read = channel.read(messageBuffer);
+                if (read == -1) {
+                    throw new IOException("Client disconnected while reading message");
+                }
+                bytesRead += read;
+            }
+
+            messageBuffer.flip();
+
+            // Deserializa o Protocol Buffers
+            byte[] messageBytes = new byte[messageSize];
+            messageBuffer.get(messageBytes);
+
+            return SimpleProtocol.TextMessage.parseFrom(messageBytes);
+        }
+
+        private void writeMessage(SocketChannel channel, SimpleProtocol.TextMessage message) throws IOException {
+            // Serializa a mensagem
+            byte[] messageBytes = message.toByteArray();
+            int messageSize = messageBytes.length;
+
+            logger.debug("Writing message of {} bytes", messageSize);
+
+            // Cria buffer com tamanho + mensagem
+            java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(4 + messageSize);
+            buffer.putInt(messageSize);      // 4 bytes de tamanho
+            buffer.put(messageBytes);        // N bytes da mensagem
+            buffer.flip();
+
+            // Escreve tudo no canal
+            while (buffer.hasRemaining()) {
+                channel.write(buffer);
+            }
+
+            logger.debug("Message written successfully");
         }
     }
 }

@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol";
+option java_outer_classname = "SimpleProtocol";
+package mediamanager;
+
+message TextMessage {
+  string content = 1;  // O texto da mensagem
+}
