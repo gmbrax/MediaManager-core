@@ -1,5 +1,6 @@
 package com.mediamanager;
 
+import com.mediamanager.service.delegate.DelegateActionManager;
 import com.mediamanager.service.ipc.IPCManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +15,7 @@ public class MediaManagerApplication {
     private static final Logger logger = LogManager.getLogger(MediaManagerApplication.class);
     private static Properties config;
     private static DatabaseManager databaseManager;
+    private static DelegateActionManager actionManager;
     private static IPCManager ipcManager;
 
     public static void main(String[] args) {
@@ -24,8 +26,9 @@ public class MediaManagerApplication {
             loadConfiguration();
             databaseManager = new DatabaseManager(config);
             databaseManager.init();
-
-            ipcManager = new IPCManager(config);
+            actionManager = new DelegateActionManager();
+            actionManager.start();
+            ipcManager = new IPCManager(config,actionManager);
             ipcManager.init();
 
             // TODO: Start application services
@@ -51,6 +54,9 @@ public class MediaManagerApplication {
                     }
                 }
 
+                if (actionManager != null) {
+                    actionManager.stop();
+                }
 
                 logger.info("MediaManager Core shutdown successfully");
                 logger.info("Goodbye!");

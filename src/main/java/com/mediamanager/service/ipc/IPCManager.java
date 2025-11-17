@@ -1,12 +1,11 @@
 package com.mediamanager.service.ipc;
 
-
-import com.mediamanager.protocol.SimpleProtocol;
+import com.mediamanager.protocol.TransportProtocol;
+import com.mediamanager.service.delegate.DelegateActionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.ByteBuffer;
-import java.io.File;
+
 import java.io.IOException;
 import java.net.StandardProtocolFamily;
 import java.net.UnixDomainSocketAddress;
@@ -28,6 +27,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class IPCManager {
     private final Properties configuration;
     private static final Logger logger = LogManager.getLogger(IPCManager.class);
+    private final DelegateActionManager actionManager;
+
     private Path socketPath;
     private UnixDomainSocketAddress socketAddress;
     private ServerSocketChannel serverChannel;
@@ -37,8 +38,9 @@ public class IPCManager {
     private final AtomicInteger clientIdCounter = new AtomicInteger(0);
 
 
-    public IPCManager(Properties config){
+    public IPCManager(Properties config, DelegateActionManager actionManager){
         configuration = config;
+        this.actionManager = actionManager;
         logger.debug("IPCManager created with configuration:");
 
 
@@ -221,29 +223,25 @@ public class IPCManager {
             logger.debug("Client {} handler thread started", clientId);
 
             try {
-                SimpleProtocol.TextMessage request = readMessage(channel);
+                TransportProtocol.Request request = readRequest(channel);
+
                 if (request != null) {
-                    logger.info("Client {} sent: '{}'", clientId, request.getContent());
-                    String response = "Server Received: " + request.getContent();
+                    logger.info("Client {} sent request {}", clientId, request.getRequestId());
 
-                    SimpleProtocol.TextMessage responseMsg = SimpleProtocol.TextMessage.newBuilder()
-                            .setContent(response).build();
+                    // Processa usando o DelegateActionManager
+                    TransportProtocol.Response response = actionManager.ProcessedRequest(request);
 
-                    writeMessage(channel,responseMsg);
-                    logger.info("Client {} response sent: '{}'", clientId, response);
+                    // Envia resposta de volta
+                    writeResponse(channel, response);
 
-                }else {
+                    logger.info("Client {} response sent", clientId);
+                } else {
                     logger.warn("Client {} sent null message", clientId);
                 }
-                Thread.sleep(100);
-
-                logger.debug("Client {} processing complete", clientId);
 
             } catch (Exception e) {
                 logger.error("Error handling client {}", clientId, e);
             } finally {
-                // SEMPRE fecha o canal quando terminar
-                // O finally garante que isso acontece mesmo se houver exceção
                 try {
                     channel.close();
                     logger.debug("Client {} channel closed", clientId);
@@ -252,8 +250,7 @@ public class IPCManager {
                 }
             }
         }
-
-        private SimpleProtocol.TextMessage readMessage(SocketChannel channel) throws IOException {
+        private TransportProtocol.Request readRequest(SocketChannel channel) throws IOException {
             // Primeiro, lê o tamanho da mensagem (4 bytes = int32)
             java.nio.ByteBuffer sizeBuffer = java.nio.ByteBuffer.allocate(4);
             int bytesRead = 0;
@@ -294,28 +291,25 @@ public class IPCManager {
             byte[] messageBytes = new byte[messageSize];
             messageBuffer.get(messageBytes);
 
-            return SimpleProtocol.TextMessage.parseFrom(messageBytes);
+            return TransportProtocol.Request.parseFrom(messageBytes);
         }
 
-        private void writeMessage(SocketChannel channel, SimpleProtocol.TextMessage message) throws IOException {
-            // Serializa a mensagem
-            byte[] messageBytes = message.toByteArray();
+        private void writeResponse(SocketChannel channel, TransportProtocol.Response response) throws IOException {
+            byte[] messageBytes = response.toByteArray();
             int messageSize = messageBytes.length;
 
-            logger.debug("Writing message of {} bytes", messageSize);
+            logger.debug("Writing response of {} bytes", messageSize);
 
-            // Cria buffer com tamanho + mensagem
             java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(4 + messageSize);
-            buffer.putInt(messageSize);      // 4 bytes de tamanho
-            buffer.put(messageBytes);        // N bytes da mensagem
+            buffer.putInt(messageSize);
+            buffer.put(messageBytes);
             buffer.flip();
 
-            // Escreve tudo no canal
             while (buffer.hasRemaining()) {
                 channel.write(buffer);
             }
 
-            logger.debug("Message written successfully");
+            logger.debug("Response written successfully");
         }
     }
 }
