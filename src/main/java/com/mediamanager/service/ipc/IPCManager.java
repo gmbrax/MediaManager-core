@@ -1,10 +1,11 @@
 package com.mediamanager.service.ipc;
 
-
+import com.mediamanager.protocol.TransportProtocol;
+import com.mediamanager.service.delegate.DelegateActionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
+
 import java.io.IOException;
 import java.net.StandardProtocolFamily;
 import java.net.UnixDomainSocketAddress;
@@ -26,6 +27,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class IPCManager {
     private final Properties configuration;
     private static final Logger logger = LogManager.getLogger(IPCManager.class);
+    private final DelegateActionManager actionManager;
+
     private Path socketPath;
     private UnixDomainSocketAddress socketAddress;
     private ServerSocketChannel serverChannel;
@@ -35,8 +38,9 @@ public class IPCManager {
     private final AtomicInteger clientIdCounter = new AtomicInteger(0);
 
 
-    public IPCManager(Properties config){
+    public IPCManager(Properties config, DelegateActionManager actionManager){
         configuration = config;
+        this.actionManager = actionManager;
         logger.debug("IPCManager created with configuration:");
 
 
@@ -219,24 +223,25 @@ public class IPCManager {
             logger.debug("Client {} handler thread started", clientId);
 
             try {
-                // TODO: No próximo passo, vamos implementar:
-                // 1. Ler mensagens JSON do SocketChannel
-                // 2. Parsear o JSON para objetos Java
-                // 3. Processar a requisição
-                // 4. Criar uma resposta JSON
-                // 5. Escrever a resposta de volta no SocketChannel
+                TransportProtocol.Request request = readRequest(channel);
 
-                // Por enquanto, apenas mantém a conexão aberta brevemente
-                // para testar que o sistema de aceitação e threads está funcionando
-                Thread.sleep(100);
+                if (request != null) {
+                    logger.info("Client {} sent request {}", clientId, request.getRequestId());
 
-                logger.debug("Client {} processing complete", clientId);
+                    // Processa usando o DelegateActionManager
+                    TransportProtocol.Response response = actionManager.ProcessedRequest(request);
+
+                    // Envia resposta de volta
+                    writeResponse(channel, response);
+
+                    logger.info("Client {} response sent", clientId);
+                } else {
+                    logger.warn("Client {} sent null message", clientId);
+                }
 
             } catch (Exception e) {
                 logger.error("Error handling client {}", clientId, e);
             } finally {
-                // SEMPRE fecha o canal quando terminar
-                // O finally garante que isso acontece mesmo se houver exceção
                 try {
                     channel.close();
                     logger.debug("Client {} channel closed", clientId);
@@ -244,6 +249,67 @@ public class IPCManager {
                     logger.error("Error closing client {} channel", clientId, e);
                 }
             }
+        }
+        private TransportProtocol.Request readRequest(SocketChannel channel) throws IOException {
+            // Primeiro, lê o tamanho da mensagem (4 bytes = int32)
+            java.nio.ByteBuffer sizeBuffer = java.nio.ByteBuffer.allocate(4);
+            int bytesRead = 0;
+
+            while (bytesRead < 4) {
+                int read = channel.read(sizeBuffer);
+                if (read == -1) {
+                    logger.debug("Client disconnected before sending size");
+                    return null;
+                }
+                bytesRead += read;
+            }
+
+            sizeBuffer.flip();
+            int messageSize = sizeBuffer.getInt();
+            logger.debug("Expecting message of {} bytes", messageSize);
+
+            // Validação básica de segurança
+            if (messageSize <= 0 || messageSize > 1024 * 1024) { // Max 1MB
+                throw new IOException("Invalid message size: " + messageSize);
+            }
+
+            // Agora lê a mensagem completa
+            java.nio.ByteBuffer messageBuffer = java.nio.ByteBuffer.allocate(messageSize);
+            bytesRead = 0;
+
+            while (bytesRead < messageSize) {
+                int read = channel.read(messageBuffer);
+                if (read == -1) {
+                    throw new IOException("Client disconnected while reading message");
+                }
+                bytesRead += read;
+            }
+
+            messageBuffer.flip();
+
+            // Deserializa o Protocol Buffers
+            byte[] messageBytes = new byte[messageSize];
+            messageBuffer.get(messageBytes);
+
+            return TransportProtocol.Request.parseFrom(messageBytes);
+        }
+
+        private void writeResponse(SocketChannel channel, TransportProtocol.Response response) throws IOException {
+            byte[] messageBytes = response.toByteArray();
+            int messageSize = messageBytes.length;
+
+            logger.debug("Writing response of {} bytes", messageSize);
+
+            java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(4 + messageSize);
+            buffer.putInt(messageSize);
+            buffer.put(messageBytes);
+            buffer.flip();
+
+            while (buffer.hasRemaining()) {
+                channel.write(buffer);
+            }
+
+            logger.debug("Response written successfully");
         }
     }
 }
