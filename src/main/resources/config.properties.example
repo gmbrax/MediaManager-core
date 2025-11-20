@@ -23,4 +23,5 @@ ipc.pipe.path=/tmp/mediamanager
 ipc.buffer.size=8192
 
 ipc.socket.path=/tmp/mediamanager
+runtype=local
 

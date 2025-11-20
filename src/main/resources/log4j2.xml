@@ -27,6 +27,29 @@
             <AppenderRef ref="Console"/>
             <AppenderRef ref="FileAppender"/>
         </Logger>
+
+        <Logger name="io.zonky.test" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+
+        <!-- PostgreSQL JDBC Driver -->
+        <Logger name="org.postgresql" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+
+        <!-- Processo do PostgreSQL embedded -->
+        <Logger name="org.postgresql.embedded" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+
+        <!-- HikariCP Connection Pool -->
+        <Logger name="com.zaxxer.hikari" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
         
         <Root level="info">
             <AppenderRef ref="Console"/>
