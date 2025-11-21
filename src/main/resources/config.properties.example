@@ -21,6 +21,8 @@ hibernate.format_sql=true
 ipc.pipe.name=mediamanager-pipe
 ipc.pipe.path=/tmp/mediamanager
 ipc.buffer.size=8192
-
+runtype=local
 ipc.socket.path=/tmp/mediamanager
+
+
 
