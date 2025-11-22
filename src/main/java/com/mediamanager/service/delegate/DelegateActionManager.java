@@ -3,6 +3,7 @@ package com.mediamanager.service.delegate;
 import com.google.protobuf.ByteString;
 import com.mediamanager.protocol.TransportProtocol;
 import com.mediamanager.service.delegate.handler.EchoHandler;
+import com.mediamanager.service.delegate.handler.HeartbeatHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,6 +24,7 @@ public class DelegateActionManager {
 
     private void registerHandlers() {
         handlerRegistry.put("echo",new EchoHandler());
+        handlerRegistry.put("heartbeat",new HeartbeatHandler());
     }
 
     public void start(){

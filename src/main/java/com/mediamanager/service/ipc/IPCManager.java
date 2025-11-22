@@ -185,7 +185,7 @@ public class IPCManager {
                     // Nenhum cliente conectado no momento
                     // Dorme por um curto período antes de verificar novamente
                     // Isso evita consumir CPU desnecessariamente em um loop vazio
-                    Thread.sleep(100); // 100 milissegundos
+                    Thread.sleep(1); // 1 milissegundos
                 }
 
             } catch (InterruptedException e) {
