@@ -9,7 +9,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <!-- Add entity classes here as they are created -->
-        <!-- <class>com.mediamanager.model.Media</class> -->
+        <class>com.mediamanager.model.Media</class>
 
         <properties>
             <!-- Database connection properties will be set programmatically -->

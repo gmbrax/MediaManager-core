@@ -1,5 +1,6 @@
 package com.mediamanager;
 
+import com.mediamanager.config.DatabaseManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,6 +11,7 @@ import java.util.Properties;
 public class MediaManagerApplication {
     private static final Logger logger = LogManager.getLogger(MediaManagerApplication.class);
     private static Properties config;
+    private static DatabaseManager databaseManager;
 
     public static void main(String[] args) {
         logger.info("Starting MediaManager Core Application...");
@@ -18,7 +20,9 @@ public class MediaManagerApplication {
             // Load configuration
             loadConfiguration();
 
-            // TODO: Initialize database connection
+            // Initialize database connection
+            databaseManager = DatabaseManager.getInstance(config);
+
             // TODO: Initialize IPC server with named pipes
             // TODO: Start application services
 
@@ -28,7 +32,9 @@ public class MediaManagerApplication {
             // Keep application running
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 logger.info("Shutting down MediaManager Core...");
-                // TODO: Cleanup resources
+                if (databaseManager != null) {
+                    databaseManager.shutdown();
+                }
             }));
 
         } catch (Exception e) {
@@ -51,5 +57,9 @@ public class MediaManagerApplication {
 
     public static Properties getConfig() {
         return config;
+    }
+
+    public static DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
 }
