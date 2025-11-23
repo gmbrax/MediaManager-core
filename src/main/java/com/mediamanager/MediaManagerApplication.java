@@ -1,5 +1,6 @@
 package com.mediamanager;
 
+import com.mediamanager.service.database.DatabaseManager;
 import com.mediamanager.service.delegate.DelegateActionManager;
 import com.mediamanager.service.ipc.IPCManager;
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.mediamanager.service.database.DatabaseManager;
+import com.mediamanager.service.database.SqliteDatabaseManager;
 
 public class MediaManagerApplication {
     private static final Logger logger = LogManager.getLogger(MediaManagerApplication.class);
@@ -18,13 +19,46 @@ public class MediaManagerApplication {
     private static DelegateActionManager actionManager;
     private static IPCManager ipcManager;
 
+    public enum ApplicationMode {
+        LOCAL("local"),
+        SERVER("server");
+
+        private final String value;
+
+        ApplicationMode(String value) {
+            this.value = value;
+        }
+    }
+
     public static void main(String[] args) {
         logger.info("Starting MediaManager Core Application...");
 
         try {
             // Load configuration
             loadConfiguration();
-            databaseManager = new DatabaseManager(config);
+            String runTypeString = config.getProperty("runtype","local");
+            ApplicationMode mode = null;
+
+            for (ApplicationMode am : ApplicationMode.values()) {
+                if (am.value.equalsIgnoreCase(runTypeString)) {
+                    mode = am;
+                    break;
+                }
+            }
+            if (mode == null) {
+                logger.error("Invalid run type: {}", runTypeString);
+                throw new Exception("Invalid run type: " + runTypeString);
+            }
+            logger.info("Run type: {}", mode);
+            switch (mode) {
+                case LOCAL:
+                    logger.info("Starting local database...");
+                    databaseManager = new SqliteDatabaseManager(config);
+                    break;
+                case SERVER:
+                    throw new Exception("Server mode not yet implemented");
+                default:
+            }
             databaseManager.init();
             actionManager = new DelegateActionManager();
             actionManager.start();
