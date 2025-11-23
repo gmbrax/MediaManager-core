@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol";
+option java_outer_classname = "TestProtocol";
+
+package mediamanager.test;
+
+message EchoCommand {
+  string message = 1;
+}
+
+message EchoResponse {
+  string message = 1;
+  int64 server_timestamp = 2;
+}
+
+message HeartbeatCommand {
+  int64 client_timestamp = 1;
+}
+
+message HeartbeatResponse {
+  int64 client_timestamp = 1;
+  int64 server_timestamp = 2;
+}
+message CloseCommand {
+  // Vazio - apenas sinaliza fechamento
+}
+message CloseResponse {
+  string message = 1;
+}

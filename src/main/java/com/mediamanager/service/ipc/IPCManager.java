@@ -185,7 +185,7 @@ public class IPCManager {
                     // Nenhum cliente conectado no momento
                     // Dorme por um curto período antes de verificar novamente
                     // Isso evita consumir CPU desnecessariamente em um loop vazio
-                    Thread.sleep(100); // 100 milissegundos
+                    Thread.sleep(1); // 1 milissegundos
                 }
 
             } catch (InterruptedException e) {
@@ -223,9 +223,16 @@ public class IPCManager {
             logger.debug("Client {} handler thread started", clientId);
 
             try {
-                TransportProtocol.Request request = readRequest(channel);
+                // LOOP: processa múltiplas requests na mesma conexão
+                while (channel.isOpen()) {
+                    TransportProtocol.Request request = readRequest(channel);
 
-                if (request != null) {
+                    if (request == null) {
+                        // Cliente desconectou gracefully
+                        logger.info("Client {} disconnected (end of stream)", clientId);
+                        break;
+                    }
+
                     logger.info("Client {} sent request {}", clientId, request.getRequestId());
 
                     // Processa usando o DelegateActionManager
@@ -233,17 +240,29 @@ public class IPCManager {
 
                     // Envia resposta de volta
                     writeResponse(channel, response);
-
                     logger.info("Client {} response sent", clientId);
-                } else {
-                    logger.warn("Client {} sent null message", clientId);
+
+                    // Verifica se é comando CLOSE
+                    String connectionHeader = response.getHeadersOrDefault("Connection", "");
+                    if ("close".equals(connectionHeader)) {
+                        logger.info("Client {} requested connection close", clientId);
+                        break; // Sai do loop e fecha
+                    }
                 }
 
+            } catch (IOException e) {
+                if (channel.isOpen()) {
+                    logger.error("IO error handling client {}", clientId, e);
+                } else {
+                    logger.debug("Client {} connection closed by peer", clientId);
+                }
             } catch (Exception e) {
-                logger.error("Error handling client {}", clientId, e);
+                logger.error("Unexpected error handling client {}", clientId, e);
             } finally {
                 try {
-                    channel.close();
+                    if (channel.isOpen()) {
+                        channel.close();
+                    }
                     logger.debug("Client {} channel closed", clientId);
                 } catch (IOException e) {
                     logger.error("Error closing client {} channel", clientId, e);
