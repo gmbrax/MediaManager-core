@@ -33,7 +33,7 @@ public class EchoHandler implements ActionHandler {
         // 4. Retorna Response
         return TransportProtocol.Response.newBuilder()
                 .setPayload(responsePayload)
-                .setStatusCode(200)
-                .putHeaders("Content-Type", "application/x-protobuf");
+                .setStatusCode(200);
+
     }
 }

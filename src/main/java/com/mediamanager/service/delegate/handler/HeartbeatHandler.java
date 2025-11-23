@@ -30,7 +30,7 @@ public class HeartbeatHandler implements ActionHandler {
 
         return TransportProtocol.Response.newBuilder()
                 .setPayload(ByteString.copyFrom(response.toByteArray()))
-                .setStatusCode(200)
-                .putHeaders("Content-Type", "application/x-protobuf");
+                .setStatusCode(200);
+
     }
 }
