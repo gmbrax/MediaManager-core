@@ -91,17 +91,22 @@ public abstract class DatabaseManager {
 
         Configuration hibernateConfig = new Configuration();
 
-        // DEBUG PRIMEIRO - antes de usar as propriedades
+
         String dialect = configuration.getProperty("hibernate.dialect");
         String hbm2ddl = configuration.getProperty("hibernate.hbm2ddl.auto");
         String driver = configuration.getProperty("database.driver");
 
-        logger.info("DEBUG - dialect: {}", dialect);
-        logger.info("DEBUG - hbm2ddl: {}", hbm2ddl);
-        logger.info("DEBUG - driver: {}", driver);
-        logger.info("DEBUG - connectionUrl: {}", connectionUrl);
+        if (dialect == null || dialect.isEmpty()) {
+            throw new IllegalStateException("hibernate.dialect property is required but not configured");
+        }
+        if (driver == null || driver.isEmpty()) {
+            throw new IllegalStateException("database.driver property is required but not configured");
+        }
+        if (connectionUrl == null || connectionUrl.isEmpty()) {
+             throw new IllegalStateException("connectionUrl must be set before initializing Hibernate");
+        }
 
-        // Agora usa as propriedades
+
         hibernateConfig.setProperty("hibernate.connection.url", connectionUrl);
         hibernateConfig.setProperty("hibernate.connection.driver_class", driver);
         hibernateConfig.setProperty("hibernate.dialect", dialect);
