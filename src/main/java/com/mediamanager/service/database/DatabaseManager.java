@@ -48,6 +48,22 @@ public abstract class DatabaseManager {
     }
 
     public void close() {
+        if (entityManager != null && entityManager.isOpen()) {
+            try {
+                entityManager.close();
+                logger.info("EntityManager closed");
+            } catch (Exception e) {
+                logger.error("Error closing EntityManager: {}", e.getMessage());
+            }
+        }
+        if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
+            try {
+                entityManagerFactory.close();
+                logger.info("EntityManagerFactory closed");
+            } catch (Exception e) {
+                logger.error("Error closing EntityManagerFactory: {}", e.getMessage());
+            }
+        }
         if (connection != null) {
             try {
                 logger.info("Closing database connection...");
