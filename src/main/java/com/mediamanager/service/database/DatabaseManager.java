@@ -117,10 +117,20 @@ public abstract class DatabaseManager {
                 configuration.getProperty("hibernate.format_sql", "true"));
 
         logger.info("Scanning for entities in package: com.mediamanager.model");
-        Reflections reflections = new Reflections("com.mediamanager.model", Scanners.TypesAnnotated);
-        Set<Class<?>> entityClasses = reflections.getTypesAnnotatedWith(Entity.class);
+
+        Set<Class<?>> entityClasses;
+        try {
+            Reflections reflections = new Reflections("com.mediamanager.model", Scanners.TypesAnnotated);
+            entityClasses = reflections.getTypesAnnotatedWith(Entity.class);
+            } catch (Exception e) {
+            logger.error("Failed to scan for entities: {}", e.getMessage());
+            throw new RuntimeException("Entity scanning failed", e);
+            }
 
         logger.info("Found {} entities", entityClasses.size());
+        if (entityClasses.isEmpty()) {
+            logger.warn("No @Entity classes found in package com.mediamanager.model - is this expected?");
+        }
         for (Class<?> entityClass : entityClasses) {
             logger.debug("Registering entity: {}", entityClass.getSimpleName());
             hibernateConfig.addAnnotatedClass(entityClass);
