@@ -121,9 +121,13 @@ public abstract class DatabaseManager {
             hibernateConfig.addAnnotatedClass(entityClass);
         }
 
-        // Criar EntityManagerFactory
-        entityManagerFactory = hibernateConfig.buildSessionFactory().unwrap(EntityManagerFactory.class);
-        entityManager = entityManagerFactory.createEntityManager();
+        try {
+            entityManagerFactory = hibernateConfig.buildSessionFactory().unwrap(EntityManagerFactory.class);
+            entityManager = entityManagerFactory.createEntityManager();
+            } catch (Exception e) {
+            logger.error("Failed to initialize Hibernate: {}", e.getMessage());
+            throw new RuntimeException("Hibernate initialization failed", e);
+            }
 
         logger.info("Hibernate ORM initialized successfully");
     }
