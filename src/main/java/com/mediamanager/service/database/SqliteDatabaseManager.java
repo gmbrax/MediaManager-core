@@ -16,7 +16,7 @@ public class SqliteDatabaseManager extends DatabaseManager {
     private static final Logger logger = LogManager.getLogger(SqliteDatabaseManager.class);
 
 
-    private String connectionUrl;
+
 
     public SqliteDatabaseManager(Properties config) {
         super(config);
@@ -45,11 +45,13 @@ public class SqliteDatabaseManager extends DatabaseManager {
             this.connectionUrl = "jdbc:sqlite:" + dbFile.toAbsolutePath().toString();
             logger.info("Database file path: {}", dbFile);
             logger.info("Connection URL: {}", this.connectionUrl);
+            initializeHibernate();
             this.connection = createConnection();
             configurePerformancePragmas();
             performSanityChecks();
             ensureSchemaExists();
             logger.info("SQLite database initialized successfully");
+
 
     }
 
