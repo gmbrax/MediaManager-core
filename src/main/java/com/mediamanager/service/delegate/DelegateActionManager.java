@@ -3,45 +3,58 @@ package com.mediamanager.service.delegate;
 import com.google.protobuf.ByteString;
 import com.mediamanager.protocol.TransportProtocol;
 import com.mediamanager.repository.GenreRepository;
-import com.mediamanager.service.delegate.handler.CloseHandler;
-import com.mediamanager.service.delegate.handler.EchoHandler;
-import com.mediamanager.service.delegate.handler.HeartbeatHandler;
-import com.mediamanager.service.delegate.handler.genre.*;
+import com.mediamanager.service.delegate.annotation.Action;
+
 import com.mediamanager.service.genre.GenreService;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import java.lang.reflect.Constructor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class DelegateActionManager {
     private static final Logger logger = LogManager.getLogger(DelegateActionManager.class);
     
     private final Map<String, ActionHandler> handlerRegistry;
+    private final ServiceLocator serviceLocator;
     private final EntityManagerFactory entityManagerFactory;
-    private final GenreService genreService;
+
 
     public DelegateActionManager(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
+        this.serviceLocator = new ServiceLocator();
 
-        GenreRepository genreRepository = new GenreRepository(entityManagerFactory);
-        this.genreService = new GenreService(genreRepository);
+        initializeServices();
+
+
         logger.debug("DelegateActionManager created");
         this.handlerRegistry = new HashMap<>();
-        registerHandlers();
+        autoRegisterHandlers();
+
     }
 
-    private void registerHandlers() {
-        handlerRegistry.put("echo",new EchoHandler());
-        handlerRegistry.put("heartbeat",new HeartbeatHandler());
-        handlerRegistry.put("close", new CloseHandler());
-        handlerRegistry.put("create_genre", new CreateGenreHandler(genreService));
-        handlerRegistry.put("get_genres", new GetGenreHandler(genreService));
-        handlerRegistry.put("get_genre_by_id", new GetGenreByIdHandler(genreService));
-        handlerRegistry.put("update_genre", new UpdateGenreHandler(genreService));
-        handlerRegistry.put("delete_genre", new DeleteGenreHandler(genreService));
+    private void initializeServices() {
+        logger.info("Initializing services...");
+
+
+        GenreRepository genreRepository = new GenreRepository(entityManagerFactory);
+        GenreService genreService = new GenreService(genreRepository);
+
+
+        serviceLocator.register(GenreService.class, genreService);
+
+
+        serviceLocator.logRegisteredServices();
+
+        logger.info("Services initialized successfully");
     }
+
+
 
     public void start(){
         logger.info("DelegateActionManager started");
@@ -49,6 +62,115 @@ public class DelegateActionManager {
 
     public void stop(){
         logger.info("DelegateActionManager stopped");
+    }
+
+    @SuppressWarnings("unchecked")
+    private ActionHandler instantiateHandler(Class<?> clazz) throws Exception {
+        logger.debug("Attempting to instantiate handler: {}", clazz.getSimpleName());
+
+
+        Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+
+
+        for (Constructor<?> constructor : constructors) {
+
+            Class<?>[] paramTypes = constructor.getParameterTypes();
+
+
+            if (paramTypes.length == 0) {
+                logger.debug("Using no-arg constructor for {}", clazz.getSimpleName());
+                return (ActionHandler) constructor.newInstance();
+            }
+
+
+            Object[] params = new Object[paramTypes.length];
+            boolean allDependenciesResolved = true;
+
+            for (int i = 0; i < paramTypes.length; i++) {
+
+                Object service = serviceLocator.get(paramTypes[i]);
+
+                if (service == null) {
+
+                    allDependenciesResolved = false;
+                    logger.debug("Cannot resolve dependency {} for {}",
+                            paramTypes[i].getSimpleName(),
+                            clazz.getSimpleName());
+                    break;  // Para de tentar esse construtor
+                }
+
+
+                params[i] = service;
+            }
+
+
+            if (allDependenciesResolved) {
+                logger.debug("Successfully resolved {} dependencies for {}",
+                        paramTypes.length,
+                        clazz.getSimpleName());
+                return (ActionHandler) constructor.newInstance(params);
+            }
+        }
+
+
+        throw new IllegalStateException(
+                String.format(
+                        "Cannot instantiate handler %s. No suitable constructor found. " +
+                                "Make sure all required services are registered in ServiceLocator.",
+                        clazz.getName()
+                )
+        );
+    }
+
+    private void autoRegisterHandlers() {
+        logger.info("Starting auto-registration of handlers...");
+        Reflections reflections = new Reflections(
+                "com.mediamanager.service.delegate.handler",
+                Scanners.TypesAnnotated
+        );
+        Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(Action.class);
+        logger.info("Found {} handler classes with @Action annotation", annotatedClasses.size());
+        int successCount = 0;
+        int failureCount = 0;
+        for (Class<?> handlerClass : annotatedClasses) {
+            try {
+
+                Action actionAnnotation = handlerClass.getAnnotation(Action.class);
+                String actionName = actionAnnotation.value();
+
+                logger.debug("Processing handler: {} for action '{}'",
+                        handlerClass.getSimpleName(),
+                        actionName);
+
+
+                ActionHandler handler = instantiateHandler(handlerClass);
+
+
+                handlerRegistry.put(actionName, handler);
+
+                logger.info("✓ Registered handler: '{}' -> {}",
+                        actionName,
+                        handlerClass.getSimpleName());
+                successCount++;
+
+            } catch (Exception e) {
+
+                logger.error("✗ Failed to register handler: {}",
+                        handlerClass.getName(),
+                        e);
+                failureCount++;
+            }
+        }
+
+
+        logger.info("Auto-registration complete: {} successful, {} failed, {} total",
+                successCount,
+                failureCount,
+                successCount + failureCount);
+
+        if (failureCount > 0) {
+            logger.warn("Some handlers failed to register. Check logs above for details.");
+        }
     }
 
     public TransportProtocol.Response ProcessedRequest(TransportProtocol.Request request){
