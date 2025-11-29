@@ -50,8 +50,7 @@ jobs:
         with:
           # Enable PR-specific reporting only for pull_request events
           pr-mode: ${{ github.event_name == 'pull_request' }}
-          # Pass the linter image via args (the action does not support an `image` input)
-          args: --image jetbrains/qodana-jvm:2025.2
+          # No extra args needed; linter is defined in qodana.yaml (qodana-jvm)
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_268690425 }}
           QODANA_ENDPOINT: 'https://qodana.cloud'

@@ -3,7 +3,8 @@
 ####################################################################################################################
 
 version: "1.0"
-linter: jetbrains/qodana-jvm:2025.2
+# Use canonical linter name to avoid image warnings and CLI flag issues
+linter: qodana-jvm
 profile:
   name: qodana.recommended
 bootstrap: |
