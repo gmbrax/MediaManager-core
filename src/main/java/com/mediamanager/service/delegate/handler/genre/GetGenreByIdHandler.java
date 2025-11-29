@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
-@Action( "genre.getById")
+@Action("genre.getById")
 public class GetGenreByIdHandler implements ActionHandler {
     private static final Logger logger = LogManager.getLogger(GetGenreByIdHandler.class);
 

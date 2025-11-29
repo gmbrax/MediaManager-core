@@ -66,13 +66,16 @@ public class DelegateActionManager {
 
     @SuppressWarnings("unchecked")
     private ActionHandler instantiateHandler(Class<?> clazz) throws Exception {
+        if(!ActionHandler.class.isAssignableFrom(clazz)){
+            throw new IllegalArgumentException(
+                    clazz.getName() + " is annotated with @Action but does not implement ActionHandler");
+
+        }
         logger.debug("Attempting to instantiate handler: {}", clazz.getSimpleName());
 
 
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
 
-
-        Constructor<?>[] constructors = clazz.getDeclaredConstructors();
 
         // Sort constructors by parameter count (descending) to prefer DI constructors
         java.util.Arrays.sort(constructors, (c1, c2) -> 
