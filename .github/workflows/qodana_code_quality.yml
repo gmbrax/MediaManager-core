@@ -66,6 +66,29 @@ jobs:
           else
             echo "[Qodana prep] Maven not available; skipping generate-sources"
           fi
+
+      # Optionally compile (skip tests) to ensure classes are available for resolution
+      - name: Compile (skip tests)
+        shell: bash
+        run: |
+          if [ -x ./mvnw ]; then
+            ./mvnw -B -DskipTests -DskipITs=true compile || true
+          elif command -v mvn >/dev/null 2>&1; then
+            mvn -B -DskipTests -DskipITs=true compile || true
+          else
+            echo "[Qodana prep] Maven not available; skipping compile"
+          fi
+
+      # Helpful debug: list generated sources if present
+      - name: Show generated sources
+        shell: bash
+        run: |
+          echo "=== target/generated-sources (tree) ===" || true
+          if [ -d target/generated-sources ]; then
+            find target/generated-sources -maxdepth 3 -type d -print || true
+          else
+            echo "(none)" || true
+          fi
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2025.2
         with:

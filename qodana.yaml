@@ -17,5 +17,5 @@ exclude:
   # Exclude generated sources from inspections to reduce noise
   - name: All
     paths:
-      - target/generated-sources/**
       - target/protoc-dependencies/**
+      # Keep generated sources included for indexing/resolution; excluding them can cause unresolved imports
