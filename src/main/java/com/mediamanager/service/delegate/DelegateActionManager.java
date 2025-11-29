@@ -2,9 +2,13 @@ package com.mediamanager.service.delegate;
 
 import com.google.protobuf.ByteString;
 import com.mediamanager.protocol.TransportProtocol;
+import com.mediamanager.repository.GenreRepository;
 import com.mediamanager.service.delegate.handler.CloseHandler;
 import com.mediamanager.service.delegate.handler.EchoHandler;
 import com.mediamanager.service.delegate.handler.HeartbeatHandler;
+import com.mediamanager.service.delegate.handler.genre.*;
+import com.mediamanager.service.genre.GenreService;
+import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,9 +19,14 @@ public class DelegateActionManager {
     private static final Logger logger = LogManager.getLogger(DelegateActionManager.class);
     
     private final Map<String, ActionHandler> handlerRegistry;
-    
-    public DelegateActionManager() {
-        
+    private final EntityManager entityManager;
+    private final GenreService genreService;
+
+    public DelegateActionManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+
+        GenreRepository genreRepository = new GenreRepository(entityManager);
+        this.genreService = new GenreService(genreRepository);
         logger.debug("DelegateActionManager created");
         this.handlerRegistry = new HashMap<>();
         registerHandlers();
@@ -27,6 +36,11 @@ public class DelegateActionManager {
         handlerRegistry.put("echo",new EchoHandler());
         handlerRegistry.put("heartbeat",new HeartbeatHandler());
         handlerRegistry.put("close", new CloseHandler());
+        handlerRegistry.put("create_genre", new CreateGenreHandler(genreService));
+        handlerRegistry.put("get_genres", new GetGenreHandler(genreService));
+        handlerRegistry.put("get_genre_by_id", new GetGenreByIdHandler(genreService));
+        handlerRegistry.put("update_genre", new UpdateGenreHandler(genreService));
+        handlerRegistry.put("delete_genre", new DeleteGenreHandler(genreService));
     }
 
     public void start(){

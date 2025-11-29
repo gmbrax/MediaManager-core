@@ -146,4 +146,8 @@ public abstract class DatabaseManager {
 
         logger.info("Hibernate ORM initialized successfully");
     }
+
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
 }

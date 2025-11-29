@@ -1,0 +1,71 @@
+package com.mediamanager.service.delegate.handler.genre;
+
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mediamanager.mapper.GenreMapper;
+import com.mediamanager.model.Genre;
+import com.mediamanager.protocol.TransportProtocol;
+import com.mediamanager.protocol.messages.GenreMessages;
+import com.mediamanager.service.delegate.ActionHandler;
+import com.mediamanager.service.genre.GenreService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.Optional;
+
+public class UpdateGenreHandler implements ActionHandler {
+    private static final Logger logger = LogManager.getLogger(UpdateGenreHandler.class);
+
+    private final GenreService genreService;
+
+    public UpdateGenreHandler(GenreService genreService) {
+        this.genreService = genreService;
+    }
+
+    @Override
+    public TransportProtocol.Response.Builder handle(ByteString requestPayload)
+            throws InvalidProtocolBufferException {
+        try {
+            // 1. Parse protobuf request
+            GenreMessages.UpdateGenreRequest updateRequest =
+                    GenreMessages.UpdateGenreRequest.parseFrom(requestPayload);
+
+            int id = updateRequest.getId();
+            String newName = updateRequest.getName();
+
+            // 2. Atualiza via service
+            Optional<Genre> genreOpt = genreService.updateGenre(id, newName);
+
+            if (genreOpt.isEmpty()) {
+                logger.warn("Genre not found with ID: {}", id);
+                return TransportProtocol.Response.newBuilder()
+                        .setStatusCode(404)
+                        .setPayload(ByteString.copyFromUtf8("Genre not found"));
+            }
+
+            // 3. Converte para protobuf
+            GenreMessages.Genre genreProto = GenreMapper.toProtobuf(genreOpt.get());
+
+            GenreMessages.UpdateGenreResponse updateResponse =
+                    GenreMessages.UpdateGenreResponse.newBuilder()
+                            .setGenre(genreProto)
+                            .build();
+
+            // 4. Retorna
+            return TransportProtocol.Response.newBuilder()
+                    .setPayload(updateResponse.toByteString());
+
+        } catch (IllegalArgumentException e) {
+            logger.error("Validation error", e);
+            return TransportProtocol.Response.newBuilder()
+                    .setStatusCode(400)
+                    .setPayload(ByteString.copyFromUtf8("Validation error: " + e.getMessage()));
+
+        } catch (Exception e) {
+            logger.error("Error updating genre", e);
+            return TransportProtocol.Response.newBuilder()
+                    .setStatusCode(500)
+                    .setPayload(ByteString.copyFromUtf8("Error: " + e.getMessage()));
+        }
+    }
+}
