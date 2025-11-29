@@ -125,7 +125,7 @@ public class IPCManager {
         }
 
 
-        logger.info("Closing IPC connection...");
+          logger.info("Closing IPC connection...");
 
         running.set(false);
         if (serverChannel != null && serverChannel.isOpen()) {

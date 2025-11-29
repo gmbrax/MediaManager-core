@@ -9,10 +9,16 @@ public class GenreMapper {
             return null;
         }
 
-        return GenreMessages.Genre.newBuilder()
-                .setId(entity.getId())
-                .setName(entity.getName())
-                .build();
+        GenreMessages.Genre.Builder builder = GenreMessages.Genre.newBuilder()
+                .setName(entity.getName());
+
+        // Only set ID when it's present and valid (> 0). Avoids NPE for null IDs.
+        Integer id = entity.getId();
+        if (id != null && id > 0) {
+            builder.setId(id);
+        }
+
+        return builder.build();
     }
     public static Genre toEntity(GenreMessages.Genre protobuf) {
         if (protobuf == null) {
