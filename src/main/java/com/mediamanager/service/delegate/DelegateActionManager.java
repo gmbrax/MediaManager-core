@@ -8,7 +8,7 @@ import com.mediamanager.service.delegate.handler.EchoHandler;
 import com.mediamanager.service.delegate.handler.HeartbeatHandler;
 import com.mediamanager.service.delegate.handler.genre.*;
 import com.mediamanager.service.genre.GenreService;
-import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,13 +19,13 @@ public class DelegateActionManager {
     private static final Logger logger = LogManager.getLogger(DelegateActionManager.class);
     
     private final Map<String, ActionHandler> handlerRegistry;
-    private final EntityManager entityManager;
+    private final EntityManagerFactory entityManagerFactory;
     private final GenreService genreService;
 
-    public DelegateActionManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
+    public DelegateActionManager(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
 
-        GenreRepository genreRepository = new GenreRepository(entityManager);
+        GenreRepository genreRepository = new GenreRepository(entityManagerFactory);
         this.genreService = new GenreService(genreRepository);
         logger.debug("DelegateActionManager created");
         this.handlerRegistry = new HashMap<>();
