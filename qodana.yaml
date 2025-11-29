@@ -8,9 +8,9 @@ linter: qodana-jvm
 profile:
   name: qodana.recommended
 bootstrap: |
-  # Generate sources (including protobuf) so Qodana resolves imports correctly.
-  # Single-line POSIX-safe chain to avoid /bin/sh parsing issues in CI (no brackets in output).
-  chmod +x ./mvnw >/dev/null 2>&1 || true; ./mvnw -B -q -DskipTests -DskipITs=true generate-sources >/dev/null 2>&1 || sh ./mvnw -B -q -DskipTests -DskipITs=true generate-sources >/dev/null 2>&1 || mvn -B -q -DskipTests -DskipITs=true generate-sources >/dev/null 2>&1 || echo "Qodana bootstrap: Maven not available; skipping source generation"
+  # Disabled bootstrap to avoid shell parsing issues in CI. If you need code generation,
+  # we can re-enable a robust script later. For now, do nothing and let Qodana run.
+  :
 include:
   - name: CheckDependencyLicenses
 exclude:
