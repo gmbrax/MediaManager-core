@@ -45,6 +45,27 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      
+      # Set up JDK for potential code generation (e.g., protobuf) prior to Qodana analysis
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      # Generate sources so that Qodana resolves imports from generated code
+      - name: Generate sources (protobuf)
+        shell: bash
+        run: |
+          if [ -f ./mvnw ]; then chmod +x ./mvnw || true; fi
+          if [ -x ./mvnw ]; then
+            ./mvnw -B -DskipTests -DskipITs=true generate-sources || true
+          elif command -v mvn >/dev/null 2>&1; then
+            mvn -B -DskipTests -DskipITs=true generate-sources || true
+          else
+            echo "[Qodana prep] Maven not available; skipping generate-sources"
+          fi
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2025.2
         with:
