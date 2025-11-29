@@ -72,15 +72,15 @@ public class DelegateActionManager {
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
 
 
+        Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+
+        // Sort constructors by parameter count (descending) to prefer DI constructors
+        java.util.Arrays.sort(constructors, (c1, c2) -> 
+            Integer.compare(c2.getParameterCount(), c1.getParameterCount()));
+
         for (Constructor<?> constructor : constructors) {
 
             Class<?>[] paramTypes = constructor.getParameterTypes();
-
-
-            if (paramTypes.length == 0) {
-                logger.debug("Using no-arg constructor for {}", clazz.getSimpleName());
-                return (ActionHandler) constructor.newInstance();
-            }
 
 
             Object[] params = new Object[paramTypes.length];
@@ -105,9 +105,8 @@ public class DelegateActionManager {
 
 
             if (allDependenciesResolved) {
-                logger.debug("Successfully resolved {} dependencies for {}",
-                        paramTypes.length,
-                        clazz.getSimpleName());
+                logger.debug("Using constructor with {} params for {}",
+                        paramTypes.length, clazz.getSimpleName());
                 return (ActionHandler) constructor.newInstance(params);
             }
         }
