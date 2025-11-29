@@ -8,19 +8,13 @@ linter: qodana-jvm
 profile:
   name: qodana.recommended
 bootstrap: |
-  # Generate sources (including protobuf) so Qodana resolves imports correctly
-  # Prefer Maven Wrapper if present; fall back to system mvn (POSIX sh compatible)
-  # Ensure mvnw is executable if present
-  if [ -f ./mvnw ]; then chmod +x ./mvnw || true; fi
-  if [ -x ./mvnw ]; then
-    ./mvnw -B -q -DskipTests -DskipITs=true generate-sources || true
-  elif [ -f ./mvnw ]; then
-    sh ./mvnw -B -q -DskipTests -DskipITs=true generate-sources || true
-  elif command -v mvn >/dev/null 2>&1; then
-    mvn -B -q -DskipTests -DskipITs=true generate-sources || true
-  else
-    echo "[Qodana bootstrap] Maven not available; skipping source generation"
-  fi
+  # Generate sources (including protobuf) so Qodana resolves imports correctly.
+  # Use a POSIX-safe, fi-less chain to avoid /bin/sh parsing issues in CI.
+  chmod +x ./mvnw 2>/dev/null || true
+  ./mvnw -B -q -DskipTests -DskipITs=true generate-sources 2>/dev/null || \
+  sh ./mvnw -B -q -DskipTests -DskipITs=true generate-sources 2>/dev/null || \
+  mvn -B -q -DskipTests -DskipITs=true generate-sources 2>/dev/null || \
+  echo "[Qodana bootstrap] Maven not available; skipping source generation"
 include:
   - name: CheckDependencyLicenses
 exclude:
