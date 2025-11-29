@@ -8,7 +8,19 @@ profile:
   name: qodana.recommended
 bootstrap: |
   # Generate sources (including protobuf) so Qodana resolves imports correctly
-  ./mvnw -B -q -DskipTests -DskipITs=true generate-sources
+  # Prefer Maven Wrapper if present; fall back to system mvn
+  # Ensure mvnw is executable if present
+  if [ -f ./mvnw ]; then chmod +x ./mvnw || true; fi
+  if [ -x ./mvnw ]; then
+    ./mvnw -B -q -DskipTests -DskipITs=true generate-sources || true
+  elif [ -f ./mvnw ]; then
+    sh ./mvnw -B -q -DskipTests -DskipITs=true generate-sources || true
+  else
+    echo "[Qodana bootstrap] mvnw not found, trying system mvn"
+    mvn -B -q -DskipTests -DskipITs=true generate-sources || {
+      echo "[Qodana bootstrap] mvn not available; skipping source generation";
+    }
+  fi
 include:
   - name: CheckDependencyLicenses
 exclude:
