@@ -60,7 +60,7 @@ public class MediaManagerApplication {
                 default:
             }
             databaseManager.init();
-            actionManager = new DelegateActionManager();
+            actionManager = new DelegateActionManager(databaseManager.getEntityManagerFactory());
             actionManager.start();
             ipcManager = new IPCManager(config,actionManager);
             ipcManager.init();

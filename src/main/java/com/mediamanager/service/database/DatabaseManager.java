@@ -1,6 +1,5 @@
 package com.mediamanager.service.database;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +19,6 @@ public abstract class DatabaseManager {
     protected Connection connection;
     protected String connectionUrl;
     protected EntityManagerFactory entityManagerFactory;
-    protected EntityManager entityManager;
     protected static final Logger logger = LogManager.getLogger(DatabaseManager.class);
 
     public DatabaseManager(Properties config) {
@@ -48,14 +46,6 @@ public abstract class DatabaseManager {
     }
 
     public void close() {
-        if (entityManager != null && entityManager.isOpen()) {
-            try {
-                entityManager.close();
-                logger.info("EntityManager closed");
-            } catch (Exception e) {
-                logger.error("Error closing EntityManager: {}", e.getMessage());
-            }
-        }
         if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
             try {
                 entityManagerFactory.close();
@@ -138,12 +128,15 @@ public abstract class DatabaseManager {
 
         try {
             entityManagerFactory = hibernateConfig.buildSessionFactory().unwrap(EntityManagerFactory.class);
-            entityManager = entityManagerFactory.createEntityManager();
             } catch (Exception e) {
             logger.error("Failed to initialize Hibernate: {}", e.getMessage());
             throw new RuntimeException("Hibernate initialization failed", e);
             }
 
         logger.info("Hibernate ORM initialized successfully");
+    }
+
+    public EntityManagerFactory getEntityManagerFactory() {
+        return entityManagerFactory;
     }
 }
