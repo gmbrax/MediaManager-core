@@ -6,9 +6,11 @@ import com.mediamanager.protocol.TestProtocol.EchoCommand;      // ← Import
 import com.mediamanager.protocol.TestProtocol.EchoResponse;    // ← Import
 import com.mediamanager.protocol.TransportProtocol;
 import com.mediamanager.service.delegate.ActionHandler;
+import com.mediamanager.service.delegate.annotation.Action;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@Action("echo")
 public class EchoHandler implements ActionHandler {
     private static final Logger logger = LogManager.getLogger(EchoHandler.class);
 

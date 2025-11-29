@@ -6,9 +6,11 @@ import com.mediamanager.protocol.TestProtocol.CloseCommand;
 import com.mediamanager.protocol.TestProtocol.CloseResponse;
 import com.mediamanager.protocol.TransportProtocol;
 import com.mediamanager.service.delegate.ActionHandler;
+import com.mediamanager.service.delegate.annotation.Action;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@Action("close")
 public class CloseHandler implements ActionHandler {
     private static final Logger logger = LogManager.getLogger(CloseHandler.class);
 
