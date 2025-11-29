@@ -7,12 +7,14 @@ import com.mediamanager.model.Genre;
 import com.mediamanager.protocol.TransportProtocol;
 import com.mediamanager.protocol.messages.GenreMessages;
 import com.mediamanager.service.delegate.ActionHandler;
+import com.mediamanager.service.delegate.annotation.Action;
 import com.mediamanager.service.genre.GenreService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
+@Action("genre.getById")
 public class GetGenreByIdHandler implements ActionHandler {
     private static final Logger logger = LogManager.getLogger(GetGenreByIdHandler.class);
 
