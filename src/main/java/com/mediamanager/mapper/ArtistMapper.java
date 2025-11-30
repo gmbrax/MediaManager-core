@@ -10,8 +10,13 @@ public class ArtistMapper {
             return null;
         }
 
+        String name = entity.getName();
+        if (name == null) {
+            throw new IllegalArgumentException("Artist name cannot be null");
+        }
+
         ArtistMessages.Artist.Builder builder = ArtistMessages.Artist.newBuilder()
-                .setName(entity.getName());
+                .setName(name);
 
         // Only set ID when it's present and valid (> 0). Avoids NPE for null IDs.
         Integer id = entity.getId();
