@@ -11,12 +11,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Action("artist.delete")
-public class DeleteArtistHandle implements ActionHandler {
-    private static final Logger logger = LogManager.getLogger(DeleteArtistHandle.class);
+public class DeleteArtistHandler implements ActionHandler {
+    private static final Logger logger = LogManager.getLogger(DeleteArtistHandler.class);
 
     private final ArtistService artistService;
 
-    public DeleteArtistHandle(ArtistService artistService) {
+    public DeleteArtistHandler(ArtistService artistService) {
         this.artistService = artistService;
     }
 
@@ -54,9 +54,9 @@ public class DeleteArtistHandle implements ActionHandler {
                             .setSuccess(false)
                             .setMessage("Error: " + e.getMessage())
                             .build();
-                    return TransportProtocol.Response.newBuilder()
-                            .setStatusCode(500)
-                            .setPayload(deleteResponse.toByteString());
+            return TransportProtocol.Response.newBuilder()
+                    .setStatusCode(500)
+                    .setPayload(deleteResponse.toByteString());
         }
-        }
+    }
     }

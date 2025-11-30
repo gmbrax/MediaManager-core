@@ -40,7 +40,7 @@ message UpdateArtistRequest {
 }
 
 message UpdateArtistResponse {
-  Artist Artist = 1;  // Genre atualizado
+  Artist Artist = 1;
 }
 
 message DeleteArtistRequest {
