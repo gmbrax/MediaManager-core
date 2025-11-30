@@ -1,7 +1,5 @@
 package com.mediamanager.repository;
-
 import com.mediamanager.model.Artist;
-import com.mediamanager.model.Genre;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.logging.log4j.LogManager;
@@ -62,17 +60,17 @@ public class ArtistRepository {
     }
 
     public Artist update(Artist artist){
-        logger.debug("Updating genre ID: {}", artist.getId());
+        logger.debug("Updating artist ID: {}", artist.getId());
         EntityManager em = entityManagerFactory.createEntityManager();
         em.getTransaction().begin();
         try {
             Artist updated = em.merge(artist);
             em.getTransaction().commit();
-            logger.debug("Genre updated successfully");
+            logger.debug("Artist updated successfully");
             return updated;
         } catch (Exception e) {
             em.getTransaction().rollback();
-            logger.error("Error updating genre", e);
+            logger.error("Error updating artist", e);
             throw e;
         } finally {
             if (em.isOpen()) em.close();
@@ -95,7 +93,7 @@ public class ArtistRepository {
             return true;
         } catch (Exception e) {
             em.getTransaction().rollback();
-            logger.error("Error deleting genre", e);
+            logger.error("Error deleting artist", e);
             throw e;
         } finally {
             if (em.isOpen()) em.close();
