@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "ArtistMessages";
+
+package mediamanager.messages;
+
+message Artist {
+  int32 id = 1;
+  string name = 2;
+}
+
+message CreateArtistRequest {
+  string name = 1;
+}
+
+message CreateArtistResponse {
+  Artist artist = 1;
+}
+
+message GetArtistsRequest {
+
+}
+
+message GetArtistsResponse {
+  repeated Artist artists = 1;
+}
+
+message GetArtistByIdRequest {
+  int32 id = 1;
+}
+
+message GetArtistByIdResponse {
+  Artist artist = 1;
+}
+
+message UpdateArtistRequest {
+  int32 id = 1;
+  string name = 2;  // Novo nome
+}
+
+message UpdateArtistResponse {
+  Artist Artist = 1;
+}
+
+message DeleteArtistRequest {
+  int32 id = 1;
+}
+
+message DeleteArtistResponse {
+  bool success = 1;
+  string message = 2;
+}
