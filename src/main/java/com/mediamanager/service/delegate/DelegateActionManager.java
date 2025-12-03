@@ -2,10 +2,9 @@ package com.mediamanager.service.delegate;
 
 import com.google.protobuf.ByteString;
 import com.mediamanager.protocol.TransportProtocol;
-import com.mediamanager.repository.ComposerRepository;
-import com.mediamanager.repository.GenreRepository;
+import com.mediamanager.repository.*;
+import com.mediamanager.service.bitdepth.BitDepthService;
 import com.mediamanager.service.composer.ComposerService;
-import com.mediamanager.repository.ArtistRepository;
 import com.mediamanager.repository.GenreRepository;
 import com.mediamanager.service.artist.ArtistService;
 import com.mediamanager.service.delegate.annotation.Action;
@@ -58,14 +57,13 @@ public class DelegateActionManager {
 
         serviceLocator.register(ArtistService.class, artistService);
 
-
-
-
-
         ComposerRepository composerRepository = new ComposerRepository(entityManagerFactory);
         ComposerService composerService = new ComposerService(composerRepository);
         serviceLocator.register(ComposerService.class, composerService);
 
+        BitDepthRepository bitDepthRepository = new BitDepthRepository(entityManagerFactory);
+        BitDepthService bitDepthService = new BitDepthService(bitDepthRepository);
+        serviceLocator.register(BitDepthService.class, bitDepthService);
 
         serviceLocator.logRegisteredServices();
 
