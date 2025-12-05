@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString;
 import com.mediamanager.protocol.TransportProtocol;
 import com.mediamanager.repository.*;
 import com.mediamanager.service.bitdepth.BitDepthService;
+import com.mediamanager.service.bitrate.BitRateService;
 import com.mediamanager.service.composer.ComposerService;
 import com.mediamanager.repository.GenreRepository;
 import com.mediamanager.service.artist.ArtistService;
@@ -64,6 +65,10 @@ public class DelegateActionManager {
         BitDepthRepository bitDepthRepository = new BitDepthRepository(entityManagerFactory);
         BitDepthService bitDepthService = new BitDepthService(bitDepthRepository);
         serviceLocator.register(BitDepthService.class, bitDepthService);
+
+        BitRateRepository bitRateRepository = new BitRateRepository(entityManagerFactory);
+        BitRateService bitRateService = new BitRateService(bitRateRepository);
+        serviceLocator.register(BitRateService.class, bitRateService);
 
         serviceLocator.logRegisteredServices();
 
