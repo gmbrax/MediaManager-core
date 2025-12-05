@@ -41,7 +41,8 @@ public class CreateBitDepthHandler implements ActionHandler {
                     .setPayload(ByteString.copyFromUtf8("Validation error: " + e.getMessage()));
 
         } catch (Exception e) {
-            logger.error("Error creating artist", e);
+            logger.error("Error creating bit-depth", e);
+            return TransportProtocol.Response.newBuilder()
             return TransportProtocol.Response.newBuilder()
                     .setStatusCode(500)
                     .setPayload(ByteString.copyFromUtf8("Error: " + e.getMessage()));
