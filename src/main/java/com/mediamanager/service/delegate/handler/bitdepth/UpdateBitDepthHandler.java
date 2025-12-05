@@ -38,7 +38,7 @@ public class UpdateBitDepthHandler implements ActionHandler {
                 logger.warn("BitDepth not found with ID: {}", id);
                 return TransportProtocol.Response.newBuilder()
                         .setStatusCode(404)
-                        .setPayload(ByteString.copyFromUtf8("Artist not found"));
+                        .setPayload(ByteString.copyFromUtf8("BitDepth not found"));
             }
 
             BitDepthMessages.BitDepth bitDepthProto = BitDepthMapper.toProtobuf(bitDepthOpt.get());
