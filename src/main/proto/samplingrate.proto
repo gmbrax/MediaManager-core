@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "SamplingRateMessages";
+
+package mediamanager.messages;
+
+message SamplingRate{
+  int32 id=1;
+  string value=2;
+}
+
+message CreateSamplingRateRequest{
+  string value= 1;
+}
+
+message CreateSamplingRateResponse{
+  SamplingRate samplingrate =1;
+}
+
+message GetSamplingRatesRequest{}
+
+message GetSamplingRatesResponse{
+  repeated SamplingRate samplingrates = 1;
+}
+
+message GetSamplingRateByIDRequest{
+  int32 id =1;
+}
+
+message GetSamplingRateByIdResponse{
+  SamplingRate samplingrate = 1;
+}
+
+message UpdateSamplingRateRequest{
+  int32 id = 1;
+  string value = 2;
+}
+
+message UpdateSamplingRateResponse{
+  SamplingRate samplingrate = 1;
+}
+
+message DeleteSamplingRateRequest{
+  int32 id =1;
+}
+
+message DeleteSamplingRateResponse{
+  bool success = 1;
+  string message =2;
+}
