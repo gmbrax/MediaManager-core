@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "BitDepthMessages";
+
+package mediamanager.messages;
+
+message BitDepth {
+  int32 id = 1;
+  string value = 2;
+}
+
+message CreateBitDepthRequest {
+  string value = 1;
+}
+
+message CreateBitDepthResponse {
+  BitDepth bitdepth = 1;
+}
+
+message GetBitDepthsRequest {
+
+}
+
+message GetBitDepthsResponse {
+  repeated BitDepth bitdepths = 1;
+}
+
+message GetBitDepthByIdRequest {
+  int32 id = 1;
+}
+
+message GetBitDepthByIdResponse {
+  BitDepth bitdepth = 1;
+}
+
+message UpdateBitDepthRequest {
+  int32 id = 1;
+  string value = 2;  // Novo nome
+}
+
+message UpdateBitDepthResponse {
+  BitDepth bitdepth = 1;
+}
+
+message DeleteBitDepthRequest {
+  int32 id = 1;
+}
+
+message DeleteBitDepthResponse {
+  bool success = 1;
+  string message = 2;
+}

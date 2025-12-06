@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "BitRateMessages";
+
+package mediamanager.messages;
+
+message BitRate{
+  int32 id =1;
+  string value = 2;
+}
+
+message CreateBitRateRequest{
+  string value = 1;
+}
+
+message CreateBitRateResponse{
+  BitRate bitrate = 1;
+}
+
+message GetBitRatesRequest{
+
+}
+
+message GetBitRatesResponse{
+  repeated BitRate bitrates = 1;
+}
+
+message GetBitRateByIdRequest{
+  int32 id = 1;
+}
+
+message GetBitRateByIdResponse{
+  BitRate bitrate = 1;
+}
+
+message UpdateBitRateRequest{
+  int32 id = 1;
+  string value = 2;
+}
+
+message UpdateBitRateResponse{
+  BitRate bitrate = 1;
+}
+
+message DeleteBitRateRequest{
+  int32 id =1;
+}
+
+message DeleteBitRateResponse{
+  bool success = 1;
+  string message = 2;
+}
