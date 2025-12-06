@@ -28,8 +28,8 @@ public class GetSamplingRateByIdHandler implements ActionHandler {
         throws InvalidProtocolBufferException{
 
         try{
-            SamplingRateMessages.GetSamplingRateByIDRequest getByIdRequest =
-                    SamplingRateMessages.GetSamplingRateByIDRequest.parseFrom(requestPayload);
+            SamplingRateMessages.GetSamplingRateByIdRequest getByIdRequest =
+                    SamplingRateMessages.GetSamplingRateByIdRequest.parseFrom(requestPayload);
             int id = getByIdRequest.getId();
 
             Optional<SamplingRate> samplingRateOpt = samplingRateService.getSamplingRateById(id);

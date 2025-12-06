@@ -24,7 +24,7 @@ message GetSamplingRatesResponse{
   repeated SamplingRate samplingrates = 1;
 }
 
-message GetSamplingRateByIDRequest{
+message GetSamplingRateByIdRequest{
   int32 id =1;
 }
 
