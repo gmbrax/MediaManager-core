@@ -11,6 +11,7 @@ import com.mediamanager.service.artist.ArtistService;
 import com.mediamanager.service.delegate.annotation.Action;
 
 import com.mediamanager.service.genre.GenreService;
+import com.mediamanager.service.samplingrate.SamplingRateService;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -69,6 +70,10 @@ public class DelegateActionManager {
         BitRateRepository bitRateRepository = new BitRateRepository(entityManagerFactory);
         BitRateService bitRateService = new BitRateService(bitRateRepository);
         serviceLocator.register(BitRateService.class, bitRateService);
+
+        SamplingRateRepository samplingRateRepository = new SamplingRateRepository(entityManagerFactory);
+        SamplingRateService  samplingRateService = new SamplingRateService(samplingRateRepository);
+        serviceLocator.register(SamplingRateService.class, samplingRateService);
 
         serviceLocator.logRegisteredServices();
 
