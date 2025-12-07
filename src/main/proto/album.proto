@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "AlbumMessages";
+
+package mediamanager.messages;
+
+message Album {
+  int32 id = 1;
+  string name = 2;
+  int32 year = 3;
+  int32 number_of_discs = 4;
+  string code = 5;
+  bool is_compilation = 6;
+
+
+  int32 fk_albumtype_id = 7;
+  int32 fk_albumart_id = 8;
+
+
+  int64 created_at = 9;
+  int64 updated_at = 10;
+}
+
+message CreateAlbumRequest {
+  string name = 1;
+  int32 year = 2;
+  int32 number_of_discs = 3;
+  string code = 4;
+  bool is_compilation = 5;
+  int32 fk_albumtype_id = 6;
+  int32 fk_albumart_id = 7;
+}
+
+message CreateAlbumResponse {
+  Album album = 1;
+}
+
+message GetAlbumsRequest {
+
+}
+
+message GetAlbumsResponse {
+  repeated Album albums = 1;
+}
+
+message GetAlbumByIdRequest {
+  int32 id = 1;
+}
+
+message GetAlbumByIdResponse {
+  Album album = 1;
+}
+
+message UpdateAlbumRequest {
+  int32 id = 1;
+  string name = 2;
+  int32 year = 3;
+  int32 number_of_discs = 4;
+  string code = 5;
+  bool is_compilation = 6;
+  int32 fk_albumtype_id = 7;
+  int32 fk_albumart_id = 8;
+}
+
+message UpdateAlbumResponse {
+  Album album = 1;
+}
+
+message DeleteAlbumRequest {
+  int32 id = 1;
+}
+
+message DeleteAlbumResponse {
+  bool success = 1;
+  string message = 2;
+}
