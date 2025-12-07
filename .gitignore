@@ -52,3 +52,5 @@ src/main/resources/application.properties
 
 # Allow example configuration files to be committed
 !src/main/resources/*.properties.example
+src/scripts/*
+local-repo/

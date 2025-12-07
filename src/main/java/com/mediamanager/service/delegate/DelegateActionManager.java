@@ -3,6 +3,7 @@ package com.mediamanager.service.delegate;
 import com.google.protobuf.ByteString;
 import com.mediamanager.protocol.TransportProtocol;
 import com.mediamanager.repository.*;
+import com.mediamanager.service.albumart.AlbumArtService;
 import com.mediamanager.service.bitdepth.BitDepthService;
 import com.mediamanager.service.bitrate.BitRateService;
 import com.mediamanager.service.composer.ComposerService;
@@ -74,6 +75,10 @@ public class DelegateActionManager {
         SamplingRateRepository samplingRateRepository = new SamplingRateRepository(entityManagerFactory);
         SamplingRateService  samplingRateService = new SamplingRateService(samplingRateRepository);
         serviceLocator.register(SamplingRateService.class, samplingRateService);
+
+        AlbumArtRepository albumArtRepository = new AlbumArtRepository(entityManagerFactory);
+        AlbumArtService albumArtService = new AlbumArtService(albumArtRepository);
+        serviceLocator.register(AlbumArtService.class, albumArtService);
 
         serviceLocator.logRegisteredServices();
 
