@@ -32,6 +32,9 @@ public class SamplingRateService {
     }
 
     public Optional<SamplingRate> getSamplingRateById(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
         logger.info("Getting sampling rate by id:{}", id);
         return repository.findById(id);
     }
