@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString;
 import com.mediamanager.protocol.TransportProtocol;
 import com.mediamanager.repository.*;
 import com.mediamanager.service.albumart.AlbumArtService;
+import com.mediamanager.service.albumtype.AlbumTypeService;
 import com.mediamanager.service.bitdepth.BitDepthService;
 import com.mediamanager.service.bitrate.BitRateService;
 import com.mediamanager.service.composer.ComposerService;
@@ -79,6 +80,10 @@ public class DelegateActionManager {
         AlbumArtRepository albumArtRepository = new AlbumArtRepository(entityManagerFactory);
         AlbumArtService albumArtService = new AlbumArtService(albumArtRepository);
         serviceLocator.register(AlbumArtService.class, albumArtService);
+
+        AlbumTypeRepository albumTypeRepository = new AlbumTypeRepository(entityManagerFactory);
+        AlbumTypeService albumTypeService = new AlbumTypeService(albumTypeRepository);
+        serviceLocator.register(AlbumTypeService.class, albumTypeService);
 
         serviceLocator.logRegisteredServices();
 
