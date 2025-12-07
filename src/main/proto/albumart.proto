@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "AlbumArtMessages";
+
+package mediamanager.messages;
+
+message AlbumArt {
+  int32 id = 1;
+  string filepath = 2;
+}
+
+message CreateAlbumArtRequest {
+  string filepath = 1;
+}
+
+message CreateAlbumArtResponse {
+  AlbumArt albumart = 1;
+}
+
+message GetAlbumArtsRequest {
+
+}
+
+message GetAlbumArtsResponse {
+  repeated AlbumArt albumarts = 1;
+}
+
+message GetAlbumArtByIdRequest {
+  int32 id = 1;
+}
+
+message GetAlbumArtByIdResponse {
+  AlbumArt albumart = 1;
+}
+
+message UpdateAlbumArtRequest {
+  int32 id = 1;
+  string filepath = 2;  // Novo nome
+}
+
+message UpdateAlbumArtResponse {
+  AlbumArt albumart = 1;
+}
+
+message DeleteAlbumArtRequest {
+  int32 id = 1;
+}
+
+message DeleteAlbumArtResponse {
+  bool success = 1;
+  string message = 2;
+}
