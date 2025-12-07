@@ -40,19 +40,22 @@ public class SamplingRateService {
     }
 
     public Optional<SamplingRate> updateSamplingRate(Integer id, String value) {
-    logger.info("Updating sampling rate:{}", value);
-    if (value == null || value.trim().isEmpty()) {
-        throw new IllegalArgumentException("Sampling-Rate value cannot be null or empty");
-    }
-    Optional<SamplingRate> existingSamplingRate = repository.findById(id);
-    if(existingSamplingRate.isEmpty()) {
-        logger.warn("Sampling rate not found with id:{}", id);
-        return Optional.empty();
-    }
-    SamplingRate samplingRate = existingSamplingRate.get();
-    samplingRate.setValue(value);
-    SamplingRate updatedSamplingRate = repository.update(samplingRate);
-    return Optional.of(updatedSamplingRate);
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+        logger.info("Updating sampling rate:{}", value);
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException("Sampling-Rate value cannot be null or empty");
+        }
+        Optional<SamplingRate> existingSamplingRate = repository.findById(id);
+        if(existingSamplingRate.isEmpty()) {
+            logger.warn("Sampling rate not found with id:{}", id);
+            return Optional.empty();
+        }
+        SamplingRate samplingRate = existingSamplingRate.get();
+        samplingRate.setValue(value);
+        SamplingRate updatedSamplingRate = repository.update(samplingRate);
+        return Optional.of(updatedSamplingRate);
     }
 
     public boolean deleteSamplingRate(Integer id) {
