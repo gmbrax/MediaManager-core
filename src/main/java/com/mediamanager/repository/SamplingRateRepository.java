@@ -53,7 +53,7 @@ public class SamplingRateRepository {
         EntityManager em = entityManagerFactory.createEntityManager();
         try{
             SamplingRate samplingRate = em.find(SamplingRate.class, id);
-            return Optional.of(samplingRate);
+            return Optional.ofNullable(samplingRate);
         }finally {
             if (em.isOpen()) em.close();
         }
