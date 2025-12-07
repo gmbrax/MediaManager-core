@@ -9,10 +9,10 @@ public class AlbumArt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
     @Column(nullable = false)
-    String filepath;
+    private String filepath;
 
 
     public Integer getId() {
