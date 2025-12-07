@@ -36,7 +36,7 @@ message GetAlbumArtByIdResponse {
 
 message UpdateAlbumArtRequest {
   int32 id = 1;
-  string filepath = 2;  // Novo nome
+  string filepath = 2;
 }
 
 message UpdateAlbumArtResponse {
