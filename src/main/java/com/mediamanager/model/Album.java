@@ -41,6 +41,10 @@ public class Album {
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlbumHasArtist> albumArtists = new ArrayList<>();
 
+    // Relacionamento ManyToMany com Genre através da tabela de junção
+    @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AlbumHasGenre> albumGenres = new ArrayList<>();  // ← ADICIONE ESSA LINHA
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -80,6 +84,31 @@ public class Album {
                 .map(AlbumHasArtist::getArtist)
                 .collect(Collectors.toList());
     }
+
+    // ========== ADICIONE ESSES MÉTODOS PARA GENRE ==========
+
+    // Métodos helper para Genre (ManyToMany)
+    public void addGenre(Genre genre) {
+        AlbumHasGenre albumHasGenre = new AlbumHasGenre();
+        albumHasGenre.setAlbum(this);
+        albumHasGenre.setGenre(genre);
+        albumGenres.add(albumHasGenre);
+    }
+
+    public void removeGenre(Genre genre) {
+        albumGenres.removeIf(ag ->
+                ag.getGenre() != null && ag.getGenre().getId().equals(genre.getId())
+        );
+    }
+
+    // Método conveniente para pegar só os gêneros
+    public List<Genre> getGenres() {
+        return albumGenres.stream()
+                .map(AlbumHasGenre::getGenre)
+                .collect(Collectors.toList());
+    }
+
+    // ========== FIM DOS MÉTODOS DE GENRE ==========
 
     // Getters and Setters
     public Integer getId() {
@@ -153,6 +182,18 @@ public class Album {
     public void setAlbumArtists(List<AlbumHasArtist> albumArtists) {
         this.albumArtists = albumArtists;
     }
+
+    // ========== ADICIONE ESSES GETTERS/SETTERS ==========
+
+    public List<AlbumHasGenre> getAlbumGenres() {
+        return albumGenres;
+    }
+
+    public void setAlbumGenres(List<AlbumHasGenre> albumGenres) {
+        this.albumGenres = albumGenres;
+    }
+
+    // ========== FIM DOS GETTERS/SETTERS DE GENRE ==========
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
