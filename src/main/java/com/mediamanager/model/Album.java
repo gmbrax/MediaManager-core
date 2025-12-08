@@ -98,9 +98,9 @@ public class Album {
     }
 
     public void removeGenre(Genre genre) {
-        albumGenres.removeIf(ag ->
-                ag.getGenre() != null && ag.getGenre().getId().equals(genre.getId())
-        );
+        ag.getGenre() != null && 
+            ag.getGenre().getId() != null && 
+            ag.getGenre().getId().equals(genre.getId())
     }
 
     // Método conveniente para pegar só os gêneros
