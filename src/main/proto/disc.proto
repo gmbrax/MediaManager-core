@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "DiscMessages";
+
+package mediamanager.messages;
+
+message Disc{
+  int32 id = 1;
+  int32 disc_number = 2;
+  int32 fk_album_id = 3;
+}
+
+message CreateDiscRequest {
+  int32 disc_number = 1;
+  int32 fk_album_id = 2;
+}
+
+message CreateDiscResponse {
+  Disc disc = 1;
+}
+
+message GetDiscsRequest {
+}
+
+message GetDiscsResponse {
+  repeated Disc discs = 1;
+}
+
+message GetDiscByIdRequest {
+  int32 id = 1;
+}
+
+message GetDiscByIdResponse {
+  Disc disc = 1;
+}
+
+message UpdateDiscRequest {
+  int32 id = 1;
+  int32 disc_number = 2;
+  int32 fk_album_id = 3;
+}
+
+message UpdateDiscResponse {
+  Disc disc = 1;
+}
+
+message DeleteDiscRequest {
+  int32 id = 1;
+}
+
+message DeleteDiscResponse {
+  string message = 1;
+}
