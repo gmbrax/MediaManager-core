@@ -3,7 +3,10 @@ package com.mediamanager.service.delegate;
 import com.google.protobuf.ByteString;
 import com.mediamanager.protocol.TransportProtocol;
 import com.mediamanager.repository.*;
+import com.mediamanager.service.album.AlbumService;
 import com.mediamanager.service.albumart.AlbumArtService;
+import com.mediamanager.service.albumhasartist.AlbumHasArtistService;
+import com.mediamanager.service.albumhasgenre.AlbumHasGenreService;
 import com.mediamanager.service.albumtype.AlbumTypeService;
 import com.mediamanager.service.bitdepth.BitDepthService;
 import com.mediamanager.service.bitrate.BitRateService;
@@ -84,6 +87,18 @@ public class DelegateActionManager {
         AlbumTypeRepository albumTypeRepository = new AlbumTypeRepository(entityManagerFactory);
         AlbumTypeService albumTypeService = new AlbumTypeService(albumTypeRepository);
         serviceLocator.register(AlbumTypeService.class, albumTypeService);
+
+        AlbumRepository albumRepository = new AlbumRepository(entityManagerFactory);
+        AlbumService albumService = new AlbumService(albumRepository, albumTypeRepository, albumArtRepository);
+        serviceLocator.register(AlbumService.class, albumService);
+
+        AlbumHasArtistRepository albumHasArtistRepository = new AlbumHasArtistRepository(entityManagerFactory);
+        AlbumHasArtistService albumHasArtistService = new AlbumHasArtistService(albumHasArtistRepository, albumRepository, artistRepository);
+        serviceLocator.register(AlbumHasArtistService.class, albumHasArtistService);
+
+        AlbumHasGenreRepository albumHasGenreRepository = new AlbumHasGenreRepository(entityManagerFactory);
+        AlbumHasGenreService albumHasGenreService = new AlbumHasGenreService(albumHasGenreRepository, albumRepository, genreRepository);
+        serviceLocator.register(AlbumHasGenreService.class, albumHasGenreService);
 
         serviceLocator.logRegisteredServices();
 
