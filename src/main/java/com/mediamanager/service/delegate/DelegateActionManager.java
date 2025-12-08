@@ -5,6 +5,7 @@ import com.mediamanager.protocol.TransportProtocol;
 import com.mediamanager.repository.*;
 import com.mediamanager.service.album.AlbumService;
 import com.mediamanager.service.albumart.AlbumArtService;
+import com.mediamanager.service.albumhasartist.AlbumHasArtistService;
 import com.mediamanager.service.albumtype.AlbumTypeService;
 import com.mediamanager.service.bitdepth.BitDepthService;
 import com.mediamanager.service.bitrate.BitRateService;
@@ -89,6 +90,10 @@ public class DelegateActionManager {
         AlbumRepository albumRepository = new AlbumRepository(entityManagerFactory);
         AlbumService albumService = new AlbumService(albumRepository, albumTypeRepository, albumArtRepository);
         serviceLocator.register(AlbumService.class, albumService);
+
+        AlbumHasArtistRepository albumHasArtistRepository = new AlbumHasArtistRepository(entityManagerFactory);
+        AlbumHasArtistService albumHasArtistService = new AlbumHasArtistService(albumHasArtistRepository, albumRepository, artistRepository);
+        serviceLocator.register(AlbumHasArtistService.class, albumHasArtistService);
 
         serviceLocator.logRegisteredServices();
 
