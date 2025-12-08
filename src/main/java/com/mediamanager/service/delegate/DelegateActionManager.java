@@ -11,8 +11,10 @@ import com.mediamanager.service.albumtype.AlbumTypeService;
 import com.mediamanager.service.bitdepth.BitDepthService;
 import com.mediamanager.service.bitrate.BitRateService;
 import com.mediamanager.service.composer.ComposerService;
+
 import com.mediamanager.repository.GenreRepository;
 import com.mediamanager.service.artist.ArtistService;
+import com.mediamanager.service.track.TrackService;
 import com.mediamanager.service.delegate.annotation.Action;
 
 import com.mediamanager.service.genre.GenreService;
@@ -99,6 +101,11 @@ public class DelegateActionManager {
         AlbumHasGenreRepository albumHasGenreRepository = new AlbumHasGenreRepository(entityManagerFactory);
         AlbumHasGenreService albumHasGenreService = new AlbumHasGenreService(albumHasGenreRepository, albumRepository, genreRepository);
         serviceLocator.register(AlbumHasGenreService.class, albumHasGenreService);
+
+
+        TrackRepository trackRepository = new TrackRepository(entityManagerFactory);
+        TrackService trackService = new TrackService(trackRepository, discRepository, composerRepository, bitDepthRepository, bitRateRepository, samplingRateRepository);
+        serviceLocator.register(TrackService.class, trackService);
 
         serviceLocator.logRegisteredServices();
 
