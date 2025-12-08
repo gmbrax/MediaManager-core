@@ -24,24 +24,47 @@ public class UpdateAlbumHandler implements ActionHandler {
     }
 
     @Override
-    public TransportProtocol.Response.Builder handle(ByteString requestPayload) throws InvalidProtocolBufferException {
-        try{
+    public TransportProtocol.Response.Builder handle(ByteString requestPayload)
+            throws InvalidProtocolBufferException {
+        try {
             AlbumMessages.UpdateAlbumRequest updateRequest =
                     AlbumMessages.UpdateAlbumRequest.parseFrom(requestPayload);
 
             int id = updateRequest.getId();
+
+            // Extrai valores dos wrappers - null se não foi fornecido
+            Integer year = updateRequest.hasYear()
+                    ? updateRequest.getYear().getValue()
+                    : null;
+
+            Integer numberOfDiscs = updateRequest.hasNumberOfDiscs()
+                    ? updateRequest.getNumberOfDiscs().getValue()
+                    : null;
+
+            Integer albumTypeId = updateRequest.hasFkAlbumtypeId()
+                    ? updateRequest.getFkAlbumtypeId().getValue()
+                    : null;
+
+            Integer albumArtId = updateRequest.hasFkAlbumartId()
+                    ? updateRequest.getFkAlbumartId().getValue()
+                    : null;
+
             Optional<Album> albumOpt = albumService.updateAlbum(
                     id,
                     updateRequest.getName(),
-                    updateRequest.getYear() > 0 ? updateRequest.getYear() : null,
-                    updateRequest.getNumberOfDiscs() > 0 ? updateRequest.getNumberOfDiscs() : null,
+                    year,
+                    numberOfDiscs,
                     updateRequest.getCode().isEmpty() ? null : updateRequest.getCode(),
                     updateRequest.getIsCompilation(),
-                    updateRequest.getFkAlbumtypeId() > 0 ? updateRequest.getFkAlbumtypeId() : null,
-                    updateRequest.getFkAlbumartId() > 0 ? updateRequest.getFkAlbumartId() : null
+                    albumTypeId,
+                    albumArtId,
+                    updateRequest.hasYear(),              // ← Novo!
+                    updateRequest.hasNumberOfDiscs(),     // ← Novo!
+                    updateRequest.hasFkAlbumtypeId(),     // ← Novo!
+                    updateRequest.hasFkAlbumartId()       // ← Novo!
             );
 
-            if(albumOpt.isEmpty()){
+            if (albumOpt.isEmpty()) {
                 logger.warn("Album not found with ID: {}", id);
                 return TransportProtocol.Response.newBuilder()
                         .setStatusCode(404)
@@ -50,14 +73,15 @@ public class UpdateAlbumHandler implements ActionHandler {
 
             AlbumMessages.Album albumProto = AlbumMapper.toProtobuf(albumOpt.get());
 
-            AlbumMessages.UpdateAlbumResponse updateResponse = AlbumMessages.UpdateAlbumResponse.newBuilder()
-                    .setAlbum(albumProto)
-                    .build();
+            AlbumMessages.UpdateAlbumResponse updateResponse =
+                    AlbumMessages.UpdateAlbumResponse.newBuilder()
+                            .setAlbum(albumProto)
+                            .build();
 
             return TransportProtocol.Response.newBuilder()
                     .setPayload(updateResponse.toByteString());
 
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             logger.error("Validation error", e);
             return TransportProtocol.Response.newBuilder()
                     .setStatusCode(400)

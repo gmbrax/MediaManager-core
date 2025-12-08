@@ -71,49 +71,72 @@ public class AlbumService {
         return repository.findById(id);
     }
 
-    public Optional<Album> updateAlbum(Integer id, String name, Integer year, Integer numberOfDiscs, String code, Boolean isCompilation, Integer albumTypeId, Integer albumArtId) {
+    public Optional<Album> updateAlbum(Integer id, String name, Integer year,
+                                       Integer numberOfDiscs, String code,
+                                       Boolean isCompilation, Integer albumTypeId,
+                                       Integer albumArtId,
+                                       boolean updateYear,          // ← Novo!
+                                       boolean updateNumberOfDiscs, // ← Novo!
+                                       boolean updateAlbumType,     // ← Novo!
+                                       boolean updateAlbumArt) {    // ← Novo!
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        logger.info("Updating album:{}", name);
+        logger.info("Updating album: {}", name);
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Album name cannot be null or empty");
         }
 
         Optional<Album> existingAlbum = repository.findById(id);
-        if(existingAlbum.isEmpty()) {
-            logger.warn("Album not found with id:{}", id);
+        if (existingAlbum.isEmpty()) {
+            logger.warn("Album not found with id: {}", id);
             return Optional.empty();
         }
 
         Album album = existingAlbum.get();
         album.setName(name);
-        album.setYear(year);
-        album.setNumberOfDiscs(numberOfDiscs);
         album.setCode(code);
         album.setIsCompilation(isCompilation);
 
-        // Update AlbumType if provided
-        if (albumTypeId != null && albumTypeId > 0) {
-            Optional<AlbumType> albumType = albumTypeRepository.findById(albumTypeId);
-            if (albumType.isEmpty()) {
-                throw new IllegalArgumentException("AlbumType not found with id: " + albumTypeId);
-            }
-            album.setAlbumType(albumType.get());
-        } else {
-            album.setAlbumType(null);
+        // Atualiza year SOMENTE se o campo foi fornecido
+        if (updateYear) {
+            album.setYear(year);
         }
 
-        // Update AlbumArt if provided
-        if (albumArtId != null && albumArtId > 0) {
-            Optional<AlbumArt> albumArt = albumArtRepository.findById(albumArtId);
-            if (albumArt.isEmpty()) {
-                throw new IllegalArgumentException("AlbumArt not found with id: " + albumArtId);
-            }
-            album.setAlbumArt(albumArt.get());
-        } else {
-            album.setAlbumArt(null);
+        // Atualiza numberOfDiscs SOMENTE se o campo foi fornecido
+        if (updateNumberOfDiscs) {
+            album.setNumberOfDiscs(numberOfDiscs);
         }
+
+        // Update AlbumType SOMENTE se o campo foi fornecido
+        if (updateAlbumType) {
+            if (albumTypeId != null && albumTypeId > 0) {
+                Optional<AlbumType> albumType = albumTypeRepository.findById(albumTypeId);
+                if (albumType.isEmpty()) {
+                    throw new IllegalArgumentException("AlbumType not found with id: " + albumTypeId);
+                }
+                album.setAlbumType(albumType.get());
+            } else {
+                // Explicitamente passado como 0 ou null = remover a relação
+                album.setAlbumType(null);
+            }
+        }
+        // Se não foi fornecido, mantém o existente
+
+        // Update AlbumArt SOMENTE se o campo foi fornecido
+        if (updateAlbumArt) {
+            if (albumArtId != null && albumArtId > 0) {
+                Optional<AlbumArt> albumArt = albumArtRepository.findById(albumArtId);
+                if (albumArt.isEmpty()) {
+                    throw new IllegalArgumentException("AlbumArt not found with id: " + albumArtId);
+                }
+                album.setAlbumArt(albumArt.get());
+            } else {
+                // Explicitamente passado como 0 ou null = remover a relação
+                album.setAlbumArt(null);
+            }
+        }
+        // Se não foi fornecido, mantém o existente
 
         Album updatedAlbum = repository.update(album);
         return Optional.of(updatedAlbum);

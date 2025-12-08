@@ -2,6 +2,9 @@ package com.mediamanager.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "album")
@@ -34,6 +37,10 @@ public class Album {
     @JoinColumn(name = "fk_albumart_id")
     private AlbumArt albumArt;
 
+    // Relacionamento ManyToMany com Artist através da tabela de junção
+    @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AlbumHasArtist> albumArtists = new ArrayList<>();
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -52,6 +59,27 @@ public class Album {
     }
 
     public Album() {}
+
+    // Métodos helper para Artist (ManyToMany)
+    public void addArtist(Artist artist) {
+        AlbumHasArtist albumHasArtist = new AlbumHasArtist();
+        albumHasArtist.setAlbum(this);
+        albumHasArtist.setArtist(artist);
+        albumArtists.add(albumHasArtist);
+    }
+
+    public void removeArtist(Artist artist) {
+        albumArtists.removeIf(aa ->
+                aa.getArtist() != null && aa.getArtist().getId().equals(artist.getId())
+        );
+    }
+
+    // Método conveniente para pegar só os artistas
+    public List<Artist> getArtists() {
+        return albumArtists.stream()
+                .map(AlbumHasArtist::getArtist)
+                .collect(Collectors.toList());
+    }
 
     // Getters and Setters
     public Integer getId() {
@@ -116,6 +144,14 @@ public class Album {
 
     public void setAlbumArt(AlbumArt albumArt) {
         this.albumArt = albumArt;
+    }
+
+    public List<AlbumHasArtist> getAlbumArtists() {
+        return albumArtists;
+    }
+
+    public void setAlbumArtists(List<AlbumHasArtist> albumArtists) {
+        this.albumArtists = albumArtists;
     }
 
     public LocalDateTime getCreatedAt() {
