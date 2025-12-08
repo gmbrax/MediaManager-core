@@ -98,6 +98,9 @@ public class Album {
     }
 
     public void removeGenre(Genre genre) {
+        if (genre != null) {
+            return;
+        }
         albumGenres.removeIf(ag ->
                 ag.getGenre() != null &&
                         ag.getGenre().getId() != null &&
