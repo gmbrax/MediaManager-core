@@ -23,7 +23,7 @@ public class CreateDiscHandler implements ActionHandler {
 
     @Override
     public TransportProtocol.Response.Builder handle(ByteString requestPayload) throws InvalidProtocolBufferException {
-        try{
+        try {
             DiscMessages.CreateDiscRequest createRequest =
                     DiscMessages.CreateDiscRequest.parseFrom(requestPayload);
 
@@ -42,13 +42,20 @@ public class CreateDiscHandler implements ActionHandler {
             logger.error("Validation error", e);
             return TransportProtocol.Response.newBuilder()
                     .setStatusCode(400)
-                    .setPayload(ByteString.copyFromUtf8("Validation error: " + e.getMessage()));
+                    .setPayload(ByteString.copyFromUtf8("Invalid request"));
+
+        } catch (InvalidProtocolBufferException e) {
+            logger.error("Invalid CreateDiscRequest payload", e);
+            return TransportProtocol.Response.newBuilder()
+                    .setStatusCode(400)
+                    .setPayload(ByteString.copyFromUtf8("Invalid request payload"));
 
         } catch (Exception e) {
             logger.error("Error creating disc", e);
             return TransportProtocol.Response.newBuilder()
                     .setStatusCode(500)
-                    .setPayload(ByteString.copyFromUtf8("Error: " + e.getMessage()));
+                    .setPayload(ByteString.copyFromUtf8("Internal server error"));
         }
+    }
     }
 }
