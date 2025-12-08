@@ -74,7 +74,9 @@ public class Album {
 
     public void removeArtist(Artist artist) {
         albumArtists.removeIf(aa ->
-                aa.getArtist() != null && aa.getArtist().getId().equals(artist.getId())
+                aa.getArtist() != null && 
+                aa.getArtist().getId() != null && 
+                aa.getArtist().getId().equals(artist.getId())
         );
     }
 
