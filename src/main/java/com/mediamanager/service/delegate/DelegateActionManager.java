@@ -3,6 +3,7 @@ package com.mediamanager.service.delegate;
 import com.google.protobuf.ByteString;
 import com.mediamanager.protocol.TransportProtocol;
 import com.mediamanager.repository.*;
+import com.mediamanager.repository.DiscRepository;
 import com.mediamanager.service.album.AlbumService;
 import com.mediamanager.service.albumart.AlbumArtService;
 import com.mediamanager.service.albumhasartist.AlbumHasArtistService;
@@ -15,6 +16,7 @@ import com.mediamanager.repository.GenreRepository;
 import com.mediamanager.service.artist.ArtistService;
 import com.mediamanager.service.delegate.annotation.Action;
 
+import com.mediamanager.service.disc.DiscService;
 import com.mediamanager.service.genre.GenreService;
 import com.mediamanager.service.samplingrate.SamplingRateService;
 import jakarta.persistence.EntityManagerFactory;
@@ -99,6 +101,10 @@ public class DelegateActionManager {
         AlbumHasGenreRepository albumHasGenreRepository = new AlbumHasGenreRepository(entityManagerFactory);
         AlbumHasGenreService albumHasGenreService = new AlbumHasGenreService(albumHasGenreRepository, albumRepository, genreRepository);
         serviceLocator.register(AlbumHasGenreService.class, albumHasGenreService);
+
+        DiscRepository discRepository = new DiscRepository(entityManagerFactory);
+        DiscService discService = new DiscService(discRepository, albumRepository);
+        serviceLocator.register(DiscService.class, discService);
 
         serviceLocator.logRegisteredServices();
 
