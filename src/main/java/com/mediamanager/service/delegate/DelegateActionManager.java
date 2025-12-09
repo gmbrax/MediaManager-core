@@ -12,6 +12,9 @@ import com.mediamanager.service.albumtype.AlbumTypeService;
 import com.mediamanager.service.bitdepth.BitDepthService;
 import com.mediamanager.service.bitrate.BitRateService;
 import com.mediamanager.service.composer.ComposerService;
+import com.mediamanager.service.trackhasgenre.TrackHasGenreService;
+import com.mediamanager.service.trackhasartist.TrackHasArtistService;
+import com.mediamanager.service.trackhascomposer.TrackHasComposerService;
 
 import com.mediamanager.repository.GenreRepository;
 import com.mediamanager.service.artist.ArtistService;
@@ -111,6 +114,18 @@ public class DelegateActionManager {
         TrackRepository trackRepository = new TrackRepository(entityManagerFactory);
         TrackService trackService = new TrackService(trackRepository, discRepository, composerRepository, bitDepthRepository, bitRateRepository, samplingRateRepository);
         serviceLocator.register(TrackService.class, trackService);
+
+        TrackHasGenreRepository trackHasGenreRepository = new TrackHasGenreRepository(entityManagerFactory);
+        TrackHasGenreService trackHasGenreService = new TrackHasGenreService(trackHasGenreRepository, trackRepository, genreRepository);
+        serviceLocator.register(TrackHasGenreService.class, trackHasGenreService);
+
+        TrackHasArtistRepository trackHasArtistRepository = new TrackHasArtistRepository(entityManagerFactory);
+        TrackHasArtistService trackHasArtistService = new TrackHasArtistService(trackHasArtistRepository, trackRepository, artistRepository);
+        serviceLocator.register(TrackHasArtistService.class, trackHasArtistService);
+
+        TrackHasComposerRepository trackHasComposerRepository = new TrackHasComposerRepository(entityManagerFactory);
+        TrackHasComposerService trackHasComposerService = new TrackHasComposerService(trackHasComposerRepository, trackRepository, composerRepository);
+        serviceLocator.register(TrackHasComposerService.class, trackHasComposerService);
 
         serviceLocator.logRegisteredServices();
 
