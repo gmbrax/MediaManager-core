@@ -14,6 +14,7 @@ import com.mediamanager.service.bitrate.BitRateService;
 import com.mediamanager.service.composer.ComposerService;
 import com.mediamanager.service.trackhasgenre.TrackHasGenreService;
 import com.mediamanager.service.trackhasartist.TrackHasArtistService;
+import com.mediamanager.service.trackhascomposer.TrackHasComposerService;
 
 import com.mediamanager.repository.GenreRepository;
 import com.mediamanager.service.artist.ArtistService;
@@ -121,6 +122,10 @@ public class DelegateActionManager {
         TrackHasArtistRepository trackHasArtistRepository = new TrackHasArtistRepository(entityManagerFactory);
         TrackHasArtistService trackHasArtistService = new TrackHasArtistService(trackHasArtistRepository, trackRepository, artistRepository);
         serviceLocator.register(TrackHasArtistService.class, trackHasArtistService);
+
+        TrackHasComposerRepository trackHasComposerRepository = new TrackHasComposerRepository(entityManagerFactory);
+        TrackHasComposerService trackHasComposerService = new TrackHasComposerService(trackHasComposerRepository, trackRepository, composerRepository);
+        serviceLocator.register(TrackHasComposerService.class, trackHasComposerService);
 
         serviceLocator.logRegisteredServices();
 
