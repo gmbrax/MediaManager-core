@@ -32,6 +32,10 @@ public class GetTrackHasGenreByIdHandler implements ActionHandler {
                     TrackHasGenreMessages.GetTrackHasGenreByIdRequest.parseFrom(requestPayload);
             int id = getByIdRequest.getId();
 
+            if (id <= 0) {
+                throw new IllegalArgumentException("ID must be greater than 0");
+            }
+
             Optional<TrackHasGenre> trackHasGenreOpt = trackHasGenreService.getTrackHasGenreById(id);
 
             if (trackHasGenreOpt.isEmpty()){
@@ -47,6 +51,11 @@ public class GetTrackHasGenreByIdHandler implements ActionHandler {
             return TransportProtocol.Response.newBuilder()
                     .setStatusCode(200)
                     .setPayload(getByIdResponse.toByteString());
+        } catch (IllegalArgumentException e) {
+            logger.error("Validation error", e);
+            return TransportProtocol.Response.newBuilder()
+                    .setStatusCode(400)
+                    .setPayload(ByteString.copyFromUtf8("Validation error: " + e.getMessage()));
         } catch (Exception e) {
             logger.error("Error getting track has genre by ID", e);
             return TransportProtocol.Response.newBuilder()
