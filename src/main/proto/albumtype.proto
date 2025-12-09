@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "AlbumTypeMessages";
+
+package mediamanager.messages;
+
+message AlbumType {
+  int32 id = 1;
+  string value = 2;
+}
+
+message CreateAlbumTypeRequest {
+  string value = 1;
+}
+
+message CreateAlbumTypeResponse {
+  AlbumType albumtype = 1;
+}
+
+message GetAlbumTypesRequest {
+
+}
+
+message GetAlbumTypesResponse {
+  repeated AlbumType albumtypes = 1;
+}
+
+message GetAlbumTypeByIdRequest {
+  int32 id = 1;
+}
+
+message GetAlbumTypeByIdResponse {
+  AlbumType albumtype = 1;
+}
+
+message UpdateAlbumTypeRequest {
+  int32 id = 1;
+  string value = 2;  // Novo nome
+}
+
+message UpdateAlbumTypeResponse {
+  AlbumType albumtype = 1;
+}
+
+message DeleteAlbumTypeRequest {
+  int32 id = 1;
+}
+
+message DeleteAlbumTypeResponse {
+  bool success = 1;
+  string message = 2;
+}

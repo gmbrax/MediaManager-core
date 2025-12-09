@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "AlbumHasArtistMessages";
+
+package mediamanager.messages;
+
+message AlbumHasArtist {
+  int32 id = 1;
+  int32 fk_album_id = 2;
+  int32 fk_artist_id = 3;
+}
+
+message CreateAlbumHasArtistRequest {
+  int32 fk_album_id = 1;
+  int32 fk_artist_id = 2;
+}
+
+message CreateAlbumHasArtistResponse {
+  AlbumHasArtist albumhasartist = 1;
+}
+
+message GetAlbumHasArtistsRequest {
+
+}
+
+message GetAlbumHasArtistsResponse {
+  repeated AlbumHasArtist albumhasartist = 1;
+}
+
+message GetAlbumHasArtistByIdRequest {
+  int32 id = 1;
+}
+
+message GetAlbumHasArtistByIdResponse {
+  AlbumHasArtist albumhasartist = 1;
+}
+
+message DeleteAlbumHasArtistRequest {
+  int32 id = 1;
+}
+
+message DeleteAlbumHasArtistResponse {
+  bool success = 1;
+  string message = 2;
+}

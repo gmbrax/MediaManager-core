@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="WARN" shutdownHook="disable">
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
+        <Console name="Console" target="SYSTEM_OUT" immediateFlush="true">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
         
         <RollingFile name="FileAppender" fileName="logs/mediamanager.log"
-                     filePattern="logs/mediamanager-%d{yyyy-MM-dd}-%i.log">
+                     filePattern="logs/mediamanager-%d{yyyy-MM-dd}-%i.log"
+                     immediateFlush="true">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
@@ -17,17 +18,17 @@
     </Appenders>
     
     <Loggers>
-        <Logger name="com.mediamanager" level="debug" additivity="false">
+        <Logger name="com.mediamanager" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="FileAppender"/>
         </Logger>
         
-        <Logger name="org.hibernate" level="info" additivity="false">
+        <Logger name="org.hibernate" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="FileAppender"/>
         </Logger>
         
-        <Root level="info">
+        <Root level="INFO">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="FileAppender"/>
         </Root>

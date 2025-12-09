@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "AlbumHasGenreMessages";
+
+package mediamanager.messages;
+
+message AlbumHasGenre {
+  int32 id = 1;
+  int32 fk_album_id = 2;
+  int32 fk_genre_id = 3;
+}
+
+message CreateAlbumHasGenreRequest {
+  int32 fk_album_id = 1;
+  int32 fk_genre_id = 2;
+}
+
+message CreateAlbumHasGenreResponse {
+  AlbumHasGenre albumhasgenre = 1;
+}
+
+message GetAlbumHasGenresRequest {
+
+}
+
+message GetAlbumHasGenresResponse {
+  repeated AlbumHasGenre albumhasgenre = 1;
+}
+
+message GetAlbumHasGenreByIdRequest {
+  int32 id = 1;
+}
+
+message GetAlbumHasGenreByIdResponse {
+  AlbumHasGenre albumhasgenre = 1;
+}
+
+message DeleteAlbumHasGenreRequest {
+  int32 id = 1;
+}
+
+message DeleteAlbumHasGenreResponse {
+  bool success = 1;
+  string message = 2;
+}

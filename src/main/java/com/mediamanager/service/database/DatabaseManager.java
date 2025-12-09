@@ -1,0 +1,142 @@
+package com.mediamanager.service.database;
+
+import jakarta.persistence.EntityManagerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.cfg.Configuration;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import jakarta.persistence.Entity;
+import java.util.Set;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
+
+
+public abstract class DatabaseManager {
+    protected final Properties configuration;
+    protected Connection connection;
+    protected String connectionUrl;
+    protected EntityManagerFactory entityManagerFactory;
+    protected static final Logger logger = LogManager.getLogger(DatabaseManager.class);
+
+    public DatabaseManager(Properties config) {
+        this.configuration = config;
+        logger.debug("DatabaseManager created with configuration:");
+    }
+
+    public abstract void init() throws Exception;
+
+    protected abstract Connection createConnection() throws Exception;
+
+    protected void performSanityChecks() throws SQLException {
+        logger.debug("Performing sanity checks...");
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute("SELECT 1");
+
+        }
+        String databaseProductName = connection.getMetaData().getDatabaseProductName();
+        String databaseProductVersion = connection.getMetaData().getDatabaseProductVersion();
+        logger.info("Connected to database: {} v{}", databaseProductName, databaseProductVersion);
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void close() {
+        if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
+            try {
+                entityManagerFactory.close();
+                logger.info("EntityManagerFactory closed");
+            } catch (Exception e) {
+                logger.error("Error closing EntityManagerFactory: {}", e.getMessage());
+            }
+        }
+        if (connection != null) {
+            try {
+                logger.info("Closing database connection...");
+                connection.close();
+                logger.info("Database connection closed successfully");
+            } catch (SQLException e) {
+                logger.error("Error closing database connection: {}", e.getMessage());
+            }
+        } else {
+            logger.debug("No database connection to close");
+        }
+    }
+
+    protected boolean testConnection() {
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute("SELECT 1");
+            return true;
+        } catch (SQLException e) {
+            logger.error("Connection test failed", e);
+            return false;
+        }
+    }
+    protected void initializeHibernate() {
+        logger.info("Initializing Hibernate ORM...");
+
+        Configuration hibernateConfig = new Configuration();
+
+
+        String dialect = configuration.getProperty("hibernate.dialect");
+        String hbm2ddl = configuration.getProperty("hibernate.hbm2ddl.auto");
+        String driver = configuration.getProperty("database.driver");
+
+        if (dialect == null || dialect.isEmpty()) {
+            throw new IllegalStateException("hibernate.dialect property is required but not configured");
+        }
+        if (driver == null || driver.isEmpty()) {
+            throw new IllegalStateException("database.driver property is required but not configured");
+        }
+        if (connectionUrl == null || connectionUrl.isEmpty()) {
+             throw new IllegalStateException("connectionUrl must be set before initializing Hibernate");
+        }
+
+
+        hibernateConfig.setProperty("hibernate.connection.url", connectionUrl);
+        hibernateConfig.setProperty("hibernate.connection.driver_class", driver);
+        hibernateConfig.setProperty("hibernate.dialect", dialect);
+        hibernateConfig.setProperty("hibernate.hbm2ddl.auto", hbm2ddl);
+        hibernateConfig.setProperty("hibernate.show_sql",
+                configuration.getProperty("hibernate.show_sql", "false"));
+        hibernateConfig.setProperty("hibernate.format_sql",
+                configuration.getProperty("hibernate.format_sql", "true"));
+
+        logger.info("Scanning for entities in package: com.mediamanager.model");
+
+        Set<Class<?>> entityClasses;
+        try {
+            Reflections reflections = new Reflections("com.mediamanager.model", Scanners.TypesAnnotated);
+            entityClasses = reflections.getTypesAnnotatedWith(Entity.class);
+            } catch (Exception e) {
+            logger.error("Failed to scan for entities: {}", e.getMessage());
+            throw new RuntimeException("Entity scanning failed", e);
+            }
+
+        logger.info("Found {} entities", entityClasses.size());
+        if (entityClasses.isEmpty()) {
+            logger.warn("No @Entity classes found in package com.mediamanager.model - is this expected?");
+        }
+        for (Class<?> entityClass : entityClasses) {
+            logger.debug("Registering entity: {}", entityClass.getSimpleName());
+            hibernateConfig.addAnnotatedClass(entityClass);
+        }
+
+        try {
+            entityManagerFactory = hibernateConfig.buildSessionFactory().unwrap(EntityManagerFactory.class);
+            } catch (Exception e) {
+            logger.error("Failed to initialize Hibernate: {}", e.getMessage());
+            throw new RuntimeException("Hibernate initialization failed", e);
+            }
+
+        logger.info("Hibernate ORM initialized successfully");
+    }
+
+    public EntityManagerFactory getEntityManagerFactory() {
+        return entityManagerFactory;
+    }
+}

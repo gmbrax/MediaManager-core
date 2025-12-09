@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "TrackHasArtistMessages";
+
+package mediamanager.messages;
+
+message TrackHasArtist{
+  int32 id = 1;
+  int32 fk_track_id = 2;
+  int32 fk_artist_id =3;
+}
+
+message CreateTrackHasArtistRequest {
+  int32 fk_track_id = 1;
+  int32 fk_artist_id = 2;
+}
+
+message CreateTrackHasArtistResponse {
+  TrackHasArtist trackhasartist = 1;
+}
+
+message GetTrackHasArtistsRequest {
+
+}
+
+message GetTrackHasArtistsResponse {
+  repeated TrackHasArtist trackhasartist = 1;
+}
+
+message GetTrackHasArtistByIdRequest {
+  int32 id = 1;
+}
+
+message GetTrackHasArtistByIdResponse {
+  TrackHasArtist trackhasartist = 1;
+}
+
+message DeleteTrackHasArtistRequest {
+  int32 id = 1;
+}
+
+message DeleteTrackHasArtistResponse {
+  bool success = 1;
+  string message = 2;
+}
