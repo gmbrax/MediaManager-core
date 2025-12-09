@@ -59,3 +59,4 @@ public class DeleteTrackHasArtistHandler implements ActionHandler {
                     .setPayload(deleteResponse.toByteString());
         }
     }
+}

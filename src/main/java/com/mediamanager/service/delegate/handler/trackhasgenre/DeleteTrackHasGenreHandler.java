@@ -59,4 +59,4 @@ public class DeleteTrackHasGenreHandler implements ActionHandler {
                     .setPayload(deleteResponse.toByteString());
         }
     }
-    }
+}
