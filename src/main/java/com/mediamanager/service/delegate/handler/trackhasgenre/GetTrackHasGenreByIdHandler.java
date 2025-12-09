@@ -45,6 +45,7 @@ public class GetTrackHasGenreByIdHandler implements ActionHandler {
                     .setTrackhasgenre(trackHasGenreProto)
                     .build();
             return TransportProtocol.Response.newBuilder()
+                    .setStatusCode(200)
                     .setPayload(getByIdResponse.toByteString());
         } catch (Exception e) {
             logger.error("Error getting track has genre by ID", e);
