@@ -3,7 +3,8 @@ package com.mediamanager.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "trackhasgenre")
+@Table(name = "trackhasgenre", 
+    uniqueConstraints = @UniqueConstraint(columnNames = {"fk_track_id", "fk_genre_id"}))
 public class TrackHasGenre {
 
     @Id
