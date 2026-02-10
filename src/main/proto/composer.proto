@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "ComposerMessages";
+
+package mediamanager.messages;
+
+message Composer {
+  int32 id =1;
+  string name =2;
+}
+
+message CreateComposerRequest{
+  string name =1;
+}
+
+message CreateComposerResponse{
+  Composer composer = 1;
+}
+
+message GetComposersRequest{}
+
+message GetComposersResponse{
+  repeated Composer composers = 1;
+}
+
+message GetComposerByIdRequest{
+  int32 id =1;
+}
+
+message GetComposerByIdResponse{
+  Composer composer =1;
+}
+
+message UpdateComposerRequest{
+  int32 id = 1;
+  string name=2;
+}
+
+message UpdateComposerResponse{
+  Composer composer = 1;
+}
+
+message DeleteComposerRequest{
+  int32 id = 1;
+}
+
+message DeleteComposerResponse{
+  bool success = 1;
+  string message = 2;
+}

@@ -39,8 +39,18 @@ build/
 .DS_Store
 
 ### Application Specific ###
-application-local.properties
+config-local.properties
 *.db
 pipes/
 *.log
 /.idea/
+
+ Configuration files with sensitive credentials
+# These files contain database passwords and API keys and should never be committed
+src/main/resources/config.properties
+src/main/resources/application.properties
+
+# Allow example configuration files to be committed
+!src/main/resources/*.properties.example
+src/scripts/*
+local-repo/

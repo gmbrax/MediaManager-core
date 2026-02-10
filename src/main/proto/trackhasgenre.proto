@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "TrackHasGenreMessages";
+
+package mediamanager.messages;
+
+message TrackHasGenre{
+  int32 id = 1;
+  int32 fk_track_id = 2;
+  int32 fk_genre_id =3;
+}
+
+message CreateTrackHasGenreRequest {
+  int32 fk_track_id = 1;
+  int32 fk_genre_id = 2;
+}
+
+message CreateTrackHasGenreResponse {
+  TrackHasGenre trackhasgenre = 1;
+}
+
+message GetTrackHasGenresRequest {
+
+}
+
+message GetTrackHasGenresResponse {
+  repeated TrackHasGenre trackhasgenre = 1;
+}
+
+message GetTrackHasGenreByIdRequest {
+  int32 id = 1;
+}
+
+message GetTrackHasGenreByIdResponse {
+  TrackHasGenre trackhasgenre = 1;
+}
+
+message DeleteTrackHasGenreRequest {
+  int32 id = 1;
+}
+
+message DeleteTrackHasGenreResponse {
+  bool success = 1;
+  string message = 2;
+}

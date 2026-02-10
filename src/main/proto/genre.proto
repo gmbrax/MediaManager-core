@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option java_package = "com.mediamanager.protocol.messages";
+option java_outer_classname = "GenreMessages";
+
+package mediamanager.messages;
+
+message Genre {
+  int32 id = 1;
+  string name = 2;
+}
+
+message CreateGenreRequest {
+  string name = 1;
+}
+
+message CreateGenreResponse {
+  Genre genre = 1;
+}
+
+message GetGenresRequest {
+
+}
+
+message GetGenresResponse {
+  repeated Genre genres = 1;
+}
+
+message GetGenreByIdRequest {
+  int32 id = 1;
+}
+
+message GetGenreByIdResponse {
+  Genre genre = 1;
+}
+
+message UpdateGenreRequest {
+  int32 id = 1;
+  string name = 2;  // Novo nome
+}
+
+message UpdateGenreResponse {
+  Genre genre = 1;  // Genre atualizado
+}
+
+message DeleteGenreRequest {
+  int32 id = 1;
+}
+
+message DeleteGenreResponse {
+  bool success = 1;
+  string message = 2;
+}
